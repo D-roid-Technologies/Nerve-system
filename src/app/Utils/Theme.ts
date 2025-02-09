@@ -9,7 +9,7 @@ const Colors = {
       border: "#DDDDDD", // Light gray for borders
       success: "#27AE60", // Green for success messages
       error: "#C0392B", // Red for error messages
-      warning: "#F39C12", // Yellow-Orange for warnings
+      warning: "#E4AB59", // Yellow-Orange for warnings
     },
     dark: {
       primary: "#D35400", // Keep dark orange for branding

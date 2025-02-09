@@ -5,6 +5,7 @@ import Colors from "../../../Utils/Theme";
 import WelcomeScreen from "../WelcomeScreen";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import HomeScreen from "../HomeScreen";
+import SearchScreen from "../SearchScreen";
 
 // Define the types for the tab navigator
 export type BottomTabParamList = {
@@ -15,12 +16,6 @@ export type BottomTabParamList = {
   Account: undefined;
 };
 
-
-const SearchScreen: React.FC = () => (
-  <View>
-    <Text>Search Screen</Text>
-  </View>
-);
 const CartScreen: React.FC = () => (
   <View>
     <Text>Cart Screen</Text>

@@ -3,6 +3,8 @@ import AppEntry from "./AppEntry";
 import Offline from "./Screens/Offline";
 import { View, Text, StyleSheet } from "react-native";
 import NetInfo from "@react-native-community/netinfo";
+import * as Font from "expo-font";
+
 
 interface ConnectionStatusContextType {
     isOnline: boolean;
@@ -11,6 +13,7 @@ interface ConnectionStatusContextType {
 const ConnectionStatusContext = createContext<ConnectionStatusContextType | null>(null);
 
 export const ConnectionStatusProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    
     const [isOnline, setIsOnline] = useState<boolean>(true);
 
     const updateConnectionStatus = useCallback(() => {

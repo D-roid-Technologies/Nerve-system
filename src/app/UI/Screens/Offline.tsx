@@ -13,10 +13,6 @@ const Offline: React.FC = () => {
       <Text style={[styles.description, { color: colors.text }]}>
         Please check your internet connection and try again.
       </Text>
-
-      <TouchableOpacity style={[styles.button, { backgroundColor: colors.primary }]} onPress={() => console.log("Retrying...")}>
-        <Text style={styles.buttonText}>Retry</Text>
-      </TouchableOpacity>
     </SafeAreaView>
   );
 };
