@@ -678,11 +678,11 @@ const HomeScreen: React.FC<any> = ({ navigation }) => {
                             key={category}
                             style={[
                                 styles.categoryItem,
-                                selectedCategory === category && { backgroundColor: colors.warning },
+                                selectedCategory === category && { backgroundColor: colors.primary },
                             ]}
                             onPress={() => setSelectedCategory(category)}
                         >
-                            <Text style={[styles.categoryText, selectedCategory === category && { color: colors.text }]}>
+                            <Text style={[styles.categoryText, selectedCategory === category && { color: "#ffffff" }]}>
                                 {category}
                             </Text>
                         </TouchableOpacity>

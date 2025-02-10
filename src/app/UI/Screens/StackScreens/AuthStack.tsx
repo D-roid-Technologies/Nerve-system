@@ -1,12 +1,14 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
+import CheckoutScreen from "../CheckoutScreen";
+import DetailsScreen from "../DetailsScreen";
 import ForgotPasswordScreen from "../ForgotPasswordScreen";
 import LoginScreen from "../LoginScreen";
 import OnboardingScreen from "../OnboardingScreen";
 import OTPScreen from "../OTPScreen";
 import PasswordResetScreen from "../PasswordResetScreen";
 import SignUpScreen from "../SignUpScreen";
-import BottomTabNavigator from "./BottomTabNavigator"; // Tabs for Welcome and Main App
+import BottomTabNavigator from "./BottomTabNavigator";
 
 const AuthStackNavigator = createNativeStackNavigator();
 
@@ -26,6 +28,8 @@ const AuthStack: React.FC = () => {
       <AuthStackNavigator.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
       <AuthStackNavigator.Screen name="OTP" component={OTPScreen} />
       <AuthStackNavigator.Screen name="PasswordReset" component={PasswordResetScreen} />
+      <AuthStackNavigator.Screen name="DetailsScreen" component={DetailsScreen} />
+      <AuthStackNavigator.Screen name="CheckoutScreen" component={CheckoutScreen} />
 
       {/* Welcome + Main App - HAS Bottom Tabs */}
       <AuthStackNavigator.Screen name="MainApp" component={BottomTabNavigator} />

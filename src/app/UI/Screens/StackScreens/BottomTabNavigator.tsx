@@ -1,38 +1,39 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { View, Text, useColorScheme } from "react-native";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../Redux/store"; // Adjust path as necessary
 import Colors from "../../../Utils/Theme";
-import WelcomeScreen from "../WelcomeScreen";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import HomeScreen from "../HomeScreen";
 import SearchScreen from "../SearchScreen";
+import { Image } from "react-native";
+import CartScreen from "../CartScreen";
 
-// Define the types for the tab navigator
+// Define the types for the bottom tab navigator
 export type BottomTabParamList = {
-  Welcome: undefined;
   Home: undefined;
   Search: undefined;
   Cart: undefined;
   Account: undefined;
 };
 
-const CartScreen: React.FC = () => (
-  <View>
-    <Text>Cart Screen</Text>
-  </View>
-);
 const AccountScreen: React.FC = () => (
   <View>
     <Text>Account Screen</Text>
   </View>
 );
 
-// Define bottom tab navigator
+// Define Bottom Tab Navigator
 const Tab = createBottomTabNavigator();
 
 const BottomTabNavigator: React.FC = () => {
   const theme = useColorScheme();
   const colors = theme === "dark" ? Colors.dark : Colors.light;
+
+  // Get cart length and user info from Redux
+  const cart = useSelector((state: RootState) => state.cart.items);
+  const user = useSelector((state: RootState) => state.auth.user);
 
   return (
     <Tab.Navigator
@@ -52,11 +53,14 @@ const BottomTabNavigator: React.FC = () => {
               iconName = "cart-outline";
               break;
             case "Account":
-              iconName = "person-outline";
-              break;
-            // case "Welcome":
-            //   iconName = "happy-outline";
-              break;
+              return user?.profilePic ? (
+                <Image
+                  source={{ uri: user.profilePic }}
+                  style={{ width: size, height: size, borderRadius: size / 2 }}
+                />
+              ) : (
+                <Ionicons name="person-outline" size={size} color={color} />
+              );
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -66,10 +70,16 @@ const BottomTabNavigator: React.FC = () => {
         headerShown: false,
       })}
     >
-      {/* <Tab.Screen name="Welcome" component={WelcomeScreen} /> */}
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Search" component={SearchScreen} />
-      <Tab.Screen name="Cart" component={CartScreen} />
+      <Tab.Screen
+        name="Cart"
+        component={CartScreen}
+        options={{
+          tabBarBadge: cart.length > 0 ? cart.length : undefined,
+          tabBarBadgeStyle: { backgroundColor: "red", color: "white" },
+        }}
+      />
       <Tab.Screen name="Account" component={AccountScreen} />
     </Tab.Navigator>
   );

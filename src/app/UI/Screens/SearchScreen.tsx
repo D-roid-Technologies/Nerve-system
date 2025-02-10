@@ -1,10 +1,11 @@
-import { FlatList, Image, ImageSourcePropType, Pressable, StyleSheet, Text, TextInput, useColorScheme, View } from 'react-native';
+import { FlatList, Image, ImageSourcePropType, ListRenderItem, Pressable, StyleSheet, Text, TextInput, useColorScheme, View } from 'react-native';
 import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '../../Utils/Theme';
 import { useToast } from 'react-native-toast-notifications';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { allItems } from '../../Utils/Data'; // Ensure 'allItems' is defined in this path
+import { Item } from 'react-native-paper/lib/typescript/components/List/List';
 
 const SearchScreen: React.FunctionComponent<any> = ({ navigation }) => {
     const theme = useColorScheme();
@@ -17,14 +18,17 @@ const SearchScreen: React.FunctionComponent<any> = ({ navigation }) => {
         return allItems.filter((item) => {
             return search.toLowerCase() === ""
                 ? item
-                : item.name.toLowerCase().includes(search);
+                : item.category.toLowerCase().includes(search);
         });
     };
 
     // Render each item in the list
-    const renderItem = ({ item }: { item: any }) => {
+    const renderItem: ListRenderItem<any> = ({ item, index }) => {
         return (
-            <Pressable style={styles.itemContainer} onPress={() => toast.show("Leads to details screen")}>
+            <Pressable style={styles.itemContainer} onPress={() => navigation.navigate('DetailsScreen', { item, index })
+
+                // toast.show("Leads to details screen")
+            }>
                 <Image source={item.image} style={styles.itemImage} />
                 <Text style={styles.itemName}>{item.name}</Text>
                 <Text style={styles.itemCategory}>{item.category}</Text>
