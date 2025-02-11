@@ -15,11 +15,12 @@ const SearchScreen: React.FunctionComponent<any> = ({ navigation }) => {
 
     // Filter items based on search query
     const searchItem = () => {
-        return allItems.filter((item) => {
-            return search.toLowerCase() === ""
-                ? item
-                : item.category.toLowerCase().includes(search);
-        });
+        if (!search.trim()) return allItems; // If search is empty, return all items
+
+        return allItems.filter((item) =>
+            item.name.toLowerCase().includes(search.toLowerCase()) ||
+            item.category.toLowerCase().includes(search.toLowerCase())
+        );
     };
 
     // Render each item in the list

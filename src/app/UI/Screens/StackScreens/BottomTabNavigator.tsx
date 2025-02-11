@@ -9,20 +9,15 @@ import HomeScreen from "../HomeScreen";
 import SearchScreen from "../SearchScreen";
 import { Image } from "react-native";
 import CartScreen from "../CartScreen";
+import ProfileScreen from "../../ProfileScreen";
 
 // Define the types for the bottom tab navigator
 export type BottomTabParamList = {
   Home: undefined;
   Search: undefined;
   Cart: undefined;
-  Account: undefined;
+  Profile: undefined;
 };
-
-const AccountScreen: React.FC = () => (
-  <View>
-    <Text>Account Screen</Text>
-  </View>
-);
 
 // Define Bottom Tab Navigator
 const Tab = createBottomTabNavigator();
@@ -52,15 +47,16 @@ const BottomTabNavigator: React.FC = () => {
             case "Cart":
               iconName = "cart-outline";
               break;
-            case "Account":
-              return user?.profilePic ? (
-                <Image
-                  source={{ uri: user.profilePic }}
-                  style={{ width: size, height: size, borderRadius: size / 2 }}
-                />
-              ) : (
-                <Ionicons name="person-outline" size={size} color={color} />
-              );
+            case "Profile":
+              return <Ionicons name="person-outline" size={size} color={color} />
+            // return user?.profilePic ? (
+            //   <Image
+            //     source={{ uri: user.profilePic }}
+            //     style={{ width: size, height: size, borderRadius: size / 2 }}
+            //   />
+            // ) : (
+            //   <Ionicons name="person-outline" size={size} color={color} />
+            // );
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -80,7 +76,7 @@ const BottomTabNavigator: React.FC = () => {
           tabBarBadgeStyle: { backgroundColor: "red", color: "white" },
         }}
       />
-      <Tab.Screen name="Account" component={AccountScreen} />
+      <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );
 };

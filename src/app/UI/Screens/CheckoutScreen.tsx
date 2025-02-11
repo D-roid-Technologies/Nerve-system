@@ -27,7 +27,8 @@ const CheckoutScreen: React.FC<DetailsScreenProps> = ({ navigation }) => {
             <View style={styles.header}>
                 <TouchableOpacity style={styles.backView} onPress={() => navigation.goBack()}>
                     <Ionicons name="arrow-back-outline" size={24} color={colors.text} />
-                    <Text>Order Confrimation</Text>
+                    <Text style={styles.headerText}>Order Confrimation</Text>
+                    <Text></Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => toast.show('Share functionality here')}>
                     <Ionicons name="share-social-outline" size={24} color={colors.text} />
@@ -52,5 +53,6 @@ const styles = StyleSheet.create({
         gap: 5,
         flexDirection: "row",
         alignItems: "center"
-    }
+    },
+    headerText: { fontSize: 20, fontWeight: "bold" },
 })
