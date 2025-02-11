@@ -1,85 +1,155 @@
 import React, { useState } from "react";
-import { Text, StyleSheet, useColorScheme, TextInput, TouchableOpacity } from "react-native";
+import {
+    Text,
+    StyleSheet,
+    useColorScheme,
+    TextInput,
+    TouchableOpacity,
+    View,
+    KeyboardTypeOptions,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useNavigation } from "@react-navigation/native";
+import { RouteProp, useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "../../Utils/Theme";
+import FontAwesome from "react-native-vector-icons/FontAwesome"; // Facebook icon
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"; // Google icon
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
-const SignUpScreen: React.FunctionComponent = () => {
+// Define User Type
+type User = {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+    profilePic?: string;
+    phone: string;
+    address: string;
+    verified: boolean;
+};
+
+// Define Navigation Props
+type RootStackParamList = {
+    Login: undefined;
+    Home: undefined;
+};
+
+
+type ScreenProps<T extends keyof RootStackParamList> = {
+    route: RouteProp<RootStackParamList, T>;
+    navigation: NativeStackNavigationProp<RootStackParamList, T>;
+};
+
+const SignUpScreen: React.FC<ScreenProps<'Login'>> = ({ navigation, route }) => {
     const theme = useColorScheme();
     const colors = theme === "dark" ? Colors.dark : Colors.light;
-    const navigation = useNavigation();
 
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    // Form Data State
+    const [formData, setFormData] = useState<Partial<User>>({});
+    console.log(formData)
+    const [step, setStep] = useState(0);
+
+    // Form Fields
+    const fields = [
+        { key: "firstName", placeholder: "Enter your First Name" },
+        { key: "lastName", placeholder: "Enter your Last Name" },
+        { key: "email", placeholder: "Enter your Email" },
+        { key: "password", placeholder: "Create a Password", secureTextEntry: true },
+        { key: "phone", placeholder: "Enter your Phone Number", keyboardType: "phone-pad" },
+        { key: "address", placeholder: "Enter your Delivery Address" },
+    ];
+
+    // Handle Input Change
+    const handleChange = (key: string, value: string) => {
+        setFormData((prev) => ({ ...prev, [key]: value }));
+    };
+
+    // Go to Next Step
+    const handleNext = () => {
+        if (step < fields.length - 1) {
+            setStep(step + 1);
+        }
+    };
 
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-            {/* Icon */}
+            {/* Back Button */}
+            <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+                <Ionicons name="arrow-back" size={28} color={colors.text} />
+            </TouchableOpacity>
+
+            {/* Signup Icon */}
             <Ionicons name="person-add-outline" size={80} color={colors.primary} style={styles.icon} />
 
             {/* Heading */}
             <Text style={[styles.heading, { color: colors.text }]}>Create an Account</Text>
 
-            {/* Input Fields */}
+            {/* Dynamic Text Input Based on Step */}
             <TextInput
                 style={[styles.input, { borderColor: colors.border, color: colors.text }]}
-                placeholder="Full Name"
-                placeholderTextColor={colors.text}
-                value={name}
-                onChangeText={setName}
+                placeholder={fields[step].placeholder}
+                placeholderTextColor="gray"
+                secureTextEntry={!!fields[step].secureTextEntry}
+                keyboardType={fields[step].keyboardType as KeyboardTypeOptions | undefined}
+                value={String(formData[fields[step].key as keyof User] || "")} // ✅ Ensure it's always a string
+                onChangeText={(text) => handleChange(fields[step].key, text)}
             />
 
-            <TextInput
-                style={[styles.input, { borderColor: colors.border, color: colors.text }]}
-                placeholder="Email"
-                placeholderTextColor={colors.text}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                value={email}
-                onChangeText={setEmail}
-            />
+            {/* Continue / Sign Up Button */}
+            {step < fields.length - 1 ? (
+                <TouchableOpacity style={[styles.button, { backgroundColor: colors.primary }]} onPress={handleNext}>
+                    <Text style={styles.buttonText}>Continue</Text>
+                </TouchableOpacity>
+            ) : (
+                <TouchableOpacity style={[styles.button, { backgroundColor: colors.primary }]}>
+                    <Text style={styles.buttonText}>Sign Up</Text>
+                </TouchableOpacity>
+            )}
 
-            <TextInput
-                style={[styles.input, { borderColor: colors.border, color: colors.text }]}
-                placeholder="Password"
-                placeholderTextColor={colors.text}
-                secureTextEntry
-                value={password}
-                onChangeText={setPassword}
-            />
+            {/* Social Sign Up Buttons */}
+            {step === fields.length - 1 && (
+                <View style={styles.socialButtonsContainer}>
+                    <TouchableOpacity style={styles.socialButton}>
+                        <MaterialCommunityIcons name="google" size={28} color="#DB4437" />
+                    </TouchableOpacity>
 
-            {/* Sign Up Button */}
-            <TouchableOpacity
-                style={[styles.button, { backgroundColor: colors.primary }]}
-                onPress={() => console.log("Sign Up Pressed")}
-            >
-                <Text style={styles.buttonText}>Sign Up</Text>
-            </TouchableOpacity>
+                    <TouchableOpacity style={styles.socialButton}>
+                        <FontAwesome name="facebook" size={28} color="#1877F2" />
+                    </TouchableOpacity>
+                </View>
+            )}
 
-            {/* Navigate to Login */}
-            <TouchableOpacity onPress={() => {}
-                // navigation.navigate("Welcome")
-                }>
+            {/* Already Have an Account? */}
+            <TouchableOpacity onPress={() => { }
+                // navigation.navigate("Login")
+            }>
                 <Text style={[styles.loginText, { color: colors.primary }]}>Already have an account? Log In</Text>
             </TouchableOpacity>
         </SafeAreaView>
     );
-}
+};
 
+// Styles
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         paddingHorizontal: 20,
-        paddingTop: 50,
+    },
+    backButton: {
+        // position: "absolute",
+        // top: 20,
+        // left: 20,
+        // zIndex: 10,
     },
     icon: {
+        alignSelf: "center",
         marginBottom: 10,
     },
     heading: {
         fontSize: 28,
         fontWeight: "bold",
+        textAlign: "center",
         marginBottom: 20,
     },
     input: {
@@ -90,20 +160,39 @@ const styles = StyleSheet.create({
         marginBottom: 15,
     },
     button: {
-        marginTop: 10,
-        paddingVertical: 12,
-        paddingHorizontal: 30,
+        paddingVertical: 14,
         borderRadius: 8,
-        alignSelf: "flex-start",
+        alignItems: "center",
+        position: "absolute",
+        bottom: 80,
+        width: "100%",
+        alignSelf: "center",
     },
     buttonText: {
         fontSize: 18,
         fontWeight: "bold",
         color: "#FFF",
     },
+    socialButtonsContainer: {
+        flexDirection: "row",
+        justifyContent: "center",
+        position: "absolute",
+        bottom: 20,
+        width: "100%",
+    },
+    socialButton: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        alignItems: "center",
+        justifyContent: "center",
+        marginHorizontal: 10,
+        backgroundColor: "#EEE",
+    },
     loginText: {
         marginTop: 15,
         fontSize: 16,
+        textAlign: "center",
     },
 });
 
