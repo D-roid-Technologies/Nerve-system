@@ -5,6 +5,7 @@ import DetailsScreen from "../DetailsScreen";
 import ForgotPasswordScreen from "../ForgotPasswordScreen";
 import LoginScreen from "../LoginScreen";
 import OnboardingScreen from "../OnboardingScreen";
+import OrderScreen from "../OrderScreen";
 import OTPScreen from "../OTPScreen";
 import PasswordResetScreen from "../PasswordResetScreen";
 import SignUpScreen from "../SignUpScreen";
@@ -30,6 +31,7 @@ const AuthStack: React.FC = () => {
       <AuthStackNavigator.Screen name="PasswordReset" component={PasswordResetScreen} />
       <AuthStackNavigator.Screen name="DetailsScreen" component={DetailsScreen} />
       <AuthStackNavigator.Screen name="CheckoutScreen" component={CheckoutScreen} />
+      <AuthStackNavigator.Screen name="OrdersScreen" component={OrderScreen} />
 
       {/* Welcome + Main App - HAS Bottom Tabs */}
       <AuthStackNavigator.Screen name="MainApp" component={BottomTabNavigator} />

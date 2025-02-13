@@ -13,9 +13,9 @@ import {
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { RouteProp, useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "./../Redux/store"; // Ensure Redux store is properly configured
-import Colors from "./../Utils/Theme";
-import { logout } from "../Redux/slices/authSlice";
+import { RootState } from "../../Redux/store"; // Ensure Redux store is properly configured
+import Colors from "../../Utils/Theme";
+import { logout } from "../../Redux/slices/authSlice";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useToast } from "react-native-toast-notifications";
@@ -79,7 +79,7 @@ const ProfileScreen: React.FC<ScreenProps<'EditProfileScreen'>> = ({ route, navi
                             source={
                                 user && user.profilePic // Check if user and user.profilePicture exist
                                     ? { uri: user.profilePic }
-                                    : require("../Assets/png/profile-icon.png") // Replace with your default profile icon
+                                    : require("../../Assets/png/profile-icon.png") // Replace with your default profile icon
                             }
                             style={styles.profileImage}
                         />
@@ -111,7 +111,7 @@ const ProfileScreen: React.FC<ScreenProps<'EditProfileScreen'>> = ({ route, navi
                     <View style={styles.trackHeader}>
                         <Text style={[styles.trackTitle, { color: colors.text }]}>Track Orders</Text>
                         <TouchableOpacity onPress={() => navigation.navigate("OrdersScreen")}>
-                            <Text style={styles.viewAllText}>View All</Text>
+                            <Text style={[styles.viewAllText, {color: colors.primary}]}>View All</Text>
                         </TouchableOpacity>
                     </View>
                     <View style={styles.orderStatus}>
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
     orderTrackingContainer: { marginBottom: 20 },
     trackHeader: { flexDirection: "row", justifyContent: "space-between", marginBottom: 10 },
     trackTitle: { fontSize: 18, fontWeight: "bold" },
-    viewAllText: { color: "blue" },
+    viewAllText: {  },
     orderStatus: { flexDirection: "row", justifyContent: "space-between", flexWrap: "wrap" },
     orderItem: { alignItems: "center", width: "30%", marginVertical: 10 },
     orderLabel: { fontSize: 14, marginTop: 5 },

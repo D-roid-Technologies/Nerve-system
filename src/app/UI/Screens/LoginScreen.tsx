@@ -49,7 +49,7 @@ const LoginScreen: React.FC<ScreenProps<'ForgotPassword'>> = ({ route, navigatio
         keyboardType="email-address"
         autoCapitalize="none"
         value={email}
-        onChangeText={setEmail}
+        onChangeText={(text) => setEmail(text)}
       />
 
       {/* Password Input */}
@@ -59,7 +59,7 @@ const LoginScreen: React.FC<ScreenProps<'ForgotPassword'>> = ({ route, navigatio
         placeholderTextColor="gray"
         secureTextEntry
         value={password}
-        onChangeText={setPassword}
+        onChangeText={(text) => setPassword(text)}
       />
 
       {/* Forgot Password & Sign Up */}
@@ -83,11 +83,11 @@ const LoginScreen: React.FC<ScreenProps<'ForgotPassword'>> = ({ route, navigatio
       {/* Social Login Buttons */}
       <View style={styles.socialButtonsContainer}>
         <TouchableOpacity style={styles.socialButton}>
-        <MaterialCommunityIcons name="google" size={28} color="#DB4437" />
+          <MaterialCommunityIcons name="google" size={28} color="#DB4437" />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.socialButton}>
-        <FontAwesome name="facebook" size={28} color="#1877F2" />
+          <FontAwesome name="facebook" size={28} color="#1877F2" />
         </TouchableOpacity>
       </View>
     </SafeAreaView>

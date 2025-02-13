@@ -15,6 +15,7 @@ import Colors from "../../Utils/Theme";
 import FontAwesome from "react-native-vector-icons/FontAwesome"; // Facebook icon
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"; // Google icon
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { appBackendService } from "../../Redux/Services/service";
 
 // Define User Type
 type User = {
@@ -72,6 +73,13 @@ const SignUpScreen: React.FC<ScreenProps<'Login'>> = ({ navigation, route }) => 
         }
     };
 
+    // const signupUser = () => {
+    //     const sendData = {
+    //         ...formData,
+    //     }
+    //     appBackendService.signupUser(sendData)
+    // }
+
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
             {/* Back Button */}
@@ -102,7 +110,9 @@ const SignUpScreen: React.FC<ScreenProps<'Login'>> = ({ navigation, route }) => 
                     <Text style={styles.buttonText}>Continue</Text>
                 </TouchableOpacity>
             ) : (
-                <TouchableOpacity style={[styles.button, { backgroundColor: colors.primary }]}>
+                <TouchableOpacity style={[styles.button, { backgroundColor: colors.primary }]}
+                    // onPress={signupUser}
+                >
                     <Text style={styles.buttonText}>Sign Up</Text>
                 </TouchableOpacity>
             )}

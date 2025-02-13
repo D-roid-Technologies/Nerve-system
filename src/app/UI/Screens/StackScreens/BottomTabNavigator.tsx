@@ -9,7 +9,7 @@ import HomeScreen from "../HomeScreen";
 import SearchScreen from "../SearchScreen";
 import { Image } from "react-native";
 import CartScreen from "../CartScreen";
-import ProfileScreen from "../../ProfileScreen";
+import ProfileScreen from "../ProfileScreen";
 
 // Define the types for the bottom tab navigator
 export type BottomTabParamList = {
