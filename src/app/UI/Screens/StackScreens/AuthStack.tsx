@@ -9,6 +9,8 @@ import OrderScreen from "../OrderScreen";
 import OTPScreen from "../OTPScreen";
 import PasswordResetScreen from "../PasswordResetScreen";
 import SignUpScreen from "../SignUpScreen";
+import SuccessScreen from "../SuccessScreen";
+import UnsuccessfulScreen from "../UnsuccessfulScreen";
 import BottomTabNavigator from "./BottomTabNavigator";
 
 const AuthStackNavigator = createNativeStackNavigator();
@@ -32,6 +34,8 @@ const AuthStack: React.FC = () => {
       <AuthStackNavigator.Screen name="DetailsScreen" component={DetailsScreen} />
       <AuthStackNavigator.Screen name="CheckoutScreen" component={CheckoutScreen} />
       <AuthStackNavigator.Screen name="OrdersScreen" component={OrderScreen} />
+      <AuthStackNavigator.Screen name="SuccessScreen" component={SuccessScreen} />
+      <AuthStackNavigator.Screen name="UnsuccessfulScreen" component={UnsuccessfulScreen} />
 
       {/* Welcome + Main App - HAS Bottom Tabs */}
       <AuthStackNavigator.Screen name="MainApp" component={BottomTabNavigator} />
