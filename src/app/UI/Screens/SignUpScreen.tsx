@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         alignItems: "center",
         position: "absolute",
-        bottom: 80,
+        bottom: 40,
         width: "100%",
         alignSelf: "center",
     },
@@ -186,8 +186,8 @@ const styles = StyleSheet.create({
     socialButtonsContainer: {
         flexDirection: "row",
         justifyContent: "center",
-        position: "absolute",
-        bottom: 20,
+        // position: "absolute",
+        // bottom: 20,
         width: "100%",
     },
     socialButton: {

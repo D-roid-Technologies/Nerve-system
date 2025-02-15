@@ -13,14 +13,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
-
 type RootStackParamList = {
     CheckoutScreen: { selectedItems: any[] };
+    Search: undefined;
 };
 
 type DetailsScreenProps = {
-    route: RouteProp<RootStackParamList, 'CheckoutScreen'>;
-    navigation: NativeStackNavigationProp<RootStackParamList, 'CheckoutScreen'>;
+    route: RouteProp<RootStackParamList, "CheckoutScreen">;
+    navigation: NativeStackNavigationProp<RootStackParamList, "CheckoutScreen">;
 };
 
 const CartScreen: React.FC<DetailsScreenProps> = ({ route, navigation }) => {
@@ -66,10 +66,11 @@ const CartScreen: React.FC<DetailsScreenProps> = ({ route, navigation }) => {
         toast.show("Selected items removed", { type: "success" });
     };
 
-    // Price Calculation
+    // Price Calculation for selected items only
     const calculateTotal = () => {
-        const subtotal = cartItems.reduce((acc, item) => acc + item.price * 1.2, 0);
-        const shippingFee = cartItems.length > 0 ? 2 : 0;
+        const selectedCartItems = cartItems.filter((item) => selectedItems.includes(item.id));
+        const subtotal = selectedCartItems.reduce((acc, item) => acc + item.price * item.quantity * 1.2, 0);
+        const shippingFee = selectedCartItems.length > 0 ? 2 : 0;
         const tax = subtotal * 0.05;
         return { subtotal, shippingFee, tax, grandTotal: subtotal + shippingFee + tax };
     };
@@ -95,6 +96,11 @@ const CartScreen: React.FC<DetailsScreenProps> = ({ route, navigation }) => {
             <FlatList
                 data={cartItems}
                 keyExtractor={(item) => item.id}
+                ListEmptyComponent={
+                    <View style={styles.emptyCart}>
+                        <Text style={styles.emptyCartText}>No items available in cart</Text>
+                    </View>
+                }
                 renderItem={({ item }) => (
                     <View style={styles.itemContainer}>
                         {/* Radio Button */}
@@ -115,40 +121,47 @@ const CartScreen: React.FC<DetailsScreenProps> = ({ route, navigation }) => {
                             <Text style={styles.itemSeller}>{item.seller.name} | {item.category}</Text>
                             <Text style={styles.itemPrice}>£{(item.price * 1.2).toFixed(2)}</Text>
                             <Text style={styles.itemTax}>+ Tax Included</Text>
+                            <Text style={styles.itemQuantity}>Quantity: {item.quantity}</Text>
                         </View>
                     </View>
                 )}
             />
 
-            {/* Summary Section */}
-            <View style={styles.summaryContainer}>
-                <View style={styles.summaryRow}>
-                    <Text>Subtotal:</Text>
-                    <Text>£{subtotal.toFixed(2)}</Text>
+            {/* Summary Section - Show only when items are selected */}
+            {selectedItems.length > 0 && (
+                <View style={styles.summaryContainer}>
+                    <View style={styles.summaryRow}>
+                        <Text>Subtotal:</Text>
+                        <Text>£{subtotal.toFixed(2)}</Text>
+                    </View>
+                    <View style={styles.summaryRow}>
+                        <Text>Shipping Fee:</Text>
+                        <Text>£{shippingFee.toFixed(2)}</Text>
+                    </View>
+                    <View style={styles.summaryRow}>
+                        <Text>Tax:</Text>
+                        <Text>£{tax.toFixed(2)}</Text>
+                    </View>
+                    <View style={styles.summaryRowTotal}>
+                        <Text style={styles.summaryTotalText}>Grand Total:</Text>
+                        <Text style={styles.summaryTotalText}>£{grandTotal.toFixed(2)}</Text>
+                    </View>
                 </View>
-                <View style={styles.summaryRow}>
-                    <Text>Shipping Fee:</Text>
-                    <Text>£{shippingFee.toFixed(2)}</Text>
-                </View>
-                <View style={styles.summaryRow}>
-                    <Text>Tax:</Text>
-                    <Text>£{tax.toFixed(2)}</Text>
-                </View>
-                <View style={styles.summaryRowTotal}>
-                    <Text style={styles.summaryTotalText}>Grand Total:</Text>
-                    <Text style={styles.summaryTotalText}>£{grandTotal.toFixed(2)}</Text>
-                </View>
-                <TouchableOpacity
-                    style={styles.checkoutButton}
-                    onPress={() => navigation.navigate("CheckoutScreen", { selectedItems })}
-                    disabled={selectedItems.length === 0} // Disable if no items selected
-                >
-                    <Text style={styles.checkoutButtonText}>
-                        Checkout ({selectedItems.length} items)
-                    </Text>
-                </TouchableOpacity>
-            </View>
+            )}
 
+            {/* Checkout Button */}
+            <TouchableOpacity
+                style={styles.checkoutButton}
+                onPress={() =>
+                    cartItems.length === 0
+                        ? navigation.navigate("Search")
+                        : navigation.navigate("CheckoutScreen", { selectedItems })
+                }
+            >
+                <Text style={styles.checkoutButtonText}>
+                    {cartItems.length === 0 ? "Find Items you like" : `Checkout (${selectedItems.length} items)`}
+                </Text>
+            </TouchableOpacity>
         </SafeAreaView>
     );
 };
@@ -159,70 +172,32 @@ const styles = StyleSheet.create({
     container: { flex: 1, padding: 16, backgroundColor: "#fff" },
 
     // Header
-    header: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        paddingBottom: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: "#ddd",
-    },
+    header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
     headerText: { fontSize: 20, fontWeight: "bold" },
     headerRight: { flexDirection: "row", alignItems: "center", gap: 10 },
     locationText: { fontSize: 12, color: "gray" },
 
+    // Empty Cart
+    emptyCart: { alignItems: "center", marginTop: 50 },
+    emptyCartText: { fontSize: 18, color: "gray" },
+
     // Cart Item
-    itemContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        paddingVertical: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: "#ddd",
-        gap: 10,
-    },
+    itemContainer: { flexDirection: "row", alignItems: "center", paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: "#ddd" },
     itemImage: { width: 60, height: 60, borderRadius: 8 },
     itemDetails: { flex: 1 },
     itemTitle: { fontSize: 16, fontWeight: "bold" },
     itemSeller: { fontSize: 12, color: "gray" },
     itemPrice: { fontSize: 14, fontWeight: "bold", color: "green" },
     itemTax: { fontSize: 12, color: "gray" },
+    itemQuantity: { fontSize: 14, fontWeight: "bold", color: "#555" },
+
+    // Checkout Button
+    checkoutButton: { backgroundColor: "#FF6F00", padding: 12, borderRadius: 8, alignItems: "center", marginTop: 10 },
+    checkoutButtonText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
 
     // Summary
-    summaryContainer: {
-        position: "absolute",
-        bottom: 60,
-        left: 0,
-        right: 0,
-        backgroundColor: "#fff",
-        padding: 16,
-        borderTopWidth: 1,
-        borderTopColor: "#ddd",
-    },
-    summaryRow: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        paddingVertical: 4,
-    },
-    summaryRowTotal: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        paddingVertical: 10,
-        borderTopWidth: 1,
-        borderTopColor: "#ddd",
-        marginTop: 8,
-    },
+    summaryContainer: { padding: 16, borderTopWidth: 1, borderTopColor: "#ddd" },
+    summaryRow: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 4 },
+    summaryRowTotal: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 10 },
     summaryTotalText: { fontSize: 18, fontWeight: "bold" },
-    checkoutButton: {
-        backgroundColor: "#FF6F00",
-        padding: 12,
-        borderRadius: 8,
-        alignItems: "center",
-        marginTop: 10,
-    },
-    checkoutButtonText: {
-        color: "#fff",
-        fontSize: 16,
-        fontWeight: "bold",
-    },
-
 });

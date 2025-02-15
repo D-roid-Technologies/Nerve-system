@@ -8,7 +8,8 @@ import { allItems } from '../../Utils/Data';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useDispatch } from 'react-redux';
-import { addToCart } from '../../Redux/slices/cartSlice';
+import { addToCart, updateCartItemQuantity } from '../../Redux/slices/cartSlice';
+import { store } from '../../Redux/store';
 
 type RootStackParamList = {
     DetailsScreen: { item: any; index: number };
@@ -41,9 +42,24 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation }) => {
     // console.log({ id: index, ...item })
 
     const pushToCart = () => {
-        dispatch(addToCart({ id: index, ...item }));
+        const state = store.getState(); // Get the current state
+        // const existingItem = state.cart.items.find((cartItem) => cartItem.id === item.id);
+        // console.log(existingItem)
+        dispatch(addToCart({...item, quantity: 1}));
+
+        // if (existingItem) {
+        //     // If item exists, increase quantity
+        //     dispatch(updateCartItemQuantity({ id: item.id, quantity: existingItem.quantity + 1 }));
+        // } else {
+        //     // If item does not exist, add it with quantity 1
+        //     dispatch(addToCart({ ...item, quantity: 1 }));
+        // }
+
         toast.show(`${item.name} added to cart`, { type: 'success' });
     };
+
+
+
 
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -76,8 +92,11 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation }) => {
                         data={similarItems}
                         horizontal
                         keyExtractor={(item, index) => index.toString()}
-                        renderItem={({ item }) => (
-                            <TouchableOpacity style={styles.similarItem}>
+                        renderItem={({ item, index }) => (
+                            <TouchableOpacity
+                                style={styles.similarItem}
+                                onPress={() => navigation.navigate('DetailsScreen', { item, index })} // Navigate with new item
+                            >
                                 <Image source={item.image} style={styles.similarItemImage} />
                                 <Text style={[styles.similarItemText, { color: colors.text }]}>{item.name}</Text>
                                 <Text style={[styles.similarItemPrice, { color: colors.primary }]}>£ {item.price}</Text>
@@ -85,6 +104,7 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation }) => {
                         )}
                         showsHorizontalScrollIndicator={false}
                     />
+
                 </View>
 
                 {/* Reviews Section */}

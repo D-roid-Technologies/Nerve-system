@@ -27,6 +27,8 @@ type CartItem = {
         rating: number;
     };
     tags: string[];
+    quantity: number;
+    options?: Record<string, any>;
 };
 
 type CartState = {
@@ -41,8 +43,27 @@ const cartSlice = createSlice({
     name: "cart",
     initialState,
     reducers: {
+        // addToCart: (state, action: PayloadAction<CartItem>) => {
+        //     state.items.push(action.payload);
+        // },
         addToCart: (state, action: PayloadAction<CartItem>) => {
-            state.items.push(action.payload);
+            const existingItem = state.items.find(
+                (item) => 
+                    item.id === action.payload.id &&
+                    JSON.stringify(item.options) === JSON.stringify(action.payload.options) 
+            );
+            if (existingItem) {
+                existingItem.quantity + 1; // Increase quantity if item exists
+                console.log(action.payload)
+            } else {
+                state.items.push({ ...action.payload, quantity: 1 }); // Add new item with quantity 1
+            }
+        },
+        updateCartItemQuantity: (state, action: PayloadAction<{ id: string; quantity: number }>) => {
+            const item = state.items.find((item) => item.id === action.payload.id);
+            if (item) {
+                item.quantity = Math.max(1, action.payload.quantity); // Ensure quantity is at least 1
+            }
         },
         removeFromCart: (state, action: PayloadAction<string>) => {
             state.items = state.items.filter((item) => item.id !== action.payload);
@@ -50,5 +71,5 @@ const cartSlice = createSlice({
     },
 });
 
-export const { addToCart, removeFromCart } = cartSlice.actions;
+export const { addToCart, removeFromCart, updateCartItemQuantity } = cartSlice.actions;
 export default cartSlice.reducer;

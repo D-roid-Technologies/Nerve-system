@@ -75,11 +75,6 @@ const LoginScreen: React.FC<ScreenProps<'ForgotPassword'>> = ({ route, navigatio
         </TouchableOpacity>
       </View>
 
-      {/* Login Button */}
-      <TouchableOpacity style={[styles.button, { backgroundColor: colors.primary }]}>
-        <Text style={styles.buttonText}>Log In</Text>
-      </TouchableOpacity>
-
       {/* Social Login Buttons */}
       <View style={styles.socialButtonsContainer}>
         <TouchableOpacity style={styles.socialButton}>
@@ -90,6 +85,13 @@ const LoginScreen: React.FC<ScreenProps<'ForgotPassword'>> = ({ route, navigatio
           <FontAwesome name="facebook" size={28} color="#1877F2" />
         </TouchableOpacity>
       </View>
+
+      {/* Login Button */}
+      <TouchableOpacity style={[styles.button, { backgroundColor: colors.primary }]}>
+        <Text style={styles.buttonText}>Log In</Text>
+      </TouchableOpacity>
+
+
     </SafeAreaView>
   );
 };
@@ -112,7 +114,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
     position: "absolute",
-    bottom: 80,
+    bottom: 20,
     width: "100%",
     alignSelf: "center"
   },
@@ -122,8 +124,9 @@ const styles = StyleSheet.create({
   socialButtonsContainer: {
     flexDirection: "row",
     justifyContent: "center",
-    position: "absolute",
-    bottom: 20,
+    alignItems: "center",
+    // position: "absolute",
+    // bottom: 20,
     width: "100%"
   },
 

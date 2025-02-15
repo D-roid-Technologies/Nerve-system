@@ -70,7 +70,7 @@ const CheckoutScreen: React.FC<CheckoutScreenProps> = ({ navigation }) => {
 
             <FlatList
                 data={cartItems}
-                keyExtractor={(item) => item.id.toString()}
+                keyExtractor={(item, index) => index.toString()}
                 ListHeaderComponent={
                     <>
                         <View style={styles.inputContainer}>
@@ -112,7 +112,7 @@ const CheckoutScreen: React.FC<CheckoutScreenProps> = ({ navigation }) => {
                 contentContainerStyle={{ paddingBottom: 20 }} // Add padding to prevent last item cutoff
             />
 
-            <TouchableOpacity style={[styles.button, {backgroundColor: colors.primary}]} onPress={handlePayment}>
+            <TouchableOpacity style={[styles.button, { backgroundColor: colors.primary }]} onPress={handlePayment}>
                 <Text style={styles.buttonText}>Proceed to Payment</Text>
             </TouchableOpacity>
         </SafeAreaView>

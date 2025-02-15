@@ -656,14 +656,15 @@ const HomeScreen: React.FC<any> = ({ navigation }) => {
                     <Image source={Images.logoInner} style={styles.mainLogo} />
                 </View>
                 <TouchableOpacity onPress={() => toast.show("Leads to Notification Screen")}>
-                    <Ionicons name="notifications-outline" size={28} color={colors.text} />
+                    {/* <Ionicons name="notifications-outline" size={28} color={colors.text} /> */}
+                    <Ionicons name="person-outline" size={28} color={colors.text} />
                 </TouchableOpacity>
             </View>
 
             {/* Search Bar */}
             <Pressable onPress={() => navigation.navigate("Search")}>
                 <View style={[styles.searchBar, { backgroundColor: colors.background }]}>
-                    <Ionicons name="search-outline" size={24} color="gray" />
+                    <Ionicons name="search-outline" size={24} color={colors.text} />
                     <Text style={styles.searchInput}>
                         Search...
                     </Text>
@@ -682,7 +683,7 @@ const HomeScreen: React.FC<any> = ({ navigation }) => {
                             ]}
                             onPress={() => setSelectedCategory(category)}
                         >
-                            <Text style={[styles.categoryText, selectedCategory === category && { color: "#ffffff" }]}>
+                            <Text style={[styles.categoryText, selectedCategory === category ? { color: colors.card } : { color: colors.text }]}>
                                 {category}
                             </Text>
                         </TouchableOpacity>
@@ -698,8 +699,8 @@ const HomeScreen: React.FC<any> = ({ navigation }) => {
             {/* Household Items Scroll (Only shows when 'Explore' is selected) */}
             {selectedCategory === "Explore" && (
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.householdScroll}>
-                    {sampleItems.Explore.map((item) => (
-                        <TouchableOpacity key={item.id} style={styles.householdItem} onPress={() => toast.show("Leads to Details Screen")}>
+                    {sampleItems.Explore.map((item, index) => (
+                        <TouchableOpacity key={item.id} style={styles.householdItem} onPress={() => navigation.navigate('DetailsScreen', { item, index })}>
                             <View style={styles.householdItemView}>
                                 <Image source={item.image} style={styles.image} />
                                 <Text style={styles.householdText}>{item.name}</Text>
@@ -714,13 +715,16 @@ const HomeScreen: React.FC<any> = ({ navigation }) => {
             )}
 
             {/* Main Items List (Dynamically Updates Based on Category Selection) */}
+
             <FlatList
                 data={sampleItems[selectedCategory]}
                 keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => (
-                    <TouchableOpacity style={[styles.itemBox, { backgroundColor: colors.card }]} onPress={() => toast.show("Leads to Deatils Screen")}>
+                renderItem={({ item, index }) => (
+                    <TouchableOpacity style={[styles.itemBox, { backgroundColor: colors.card }]} onPress={() => navigation.navigate('DetailsScreen', { item, index })}>
                         <View style={[styles.householdItemView, { height: 250 }]}>
-                            <Image source={item.image} style={styles.image} />
+                            <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center", width: "100%" }}>
+                                <Image source={item.image} style={styles.image} />
+                            </View>
                             <Text style={styles.householdText}>{item.name}</Text>
                             <View>
                                 <Text style={styles.householdTextPrice}>{`£ ${item.price}`}</Text>
@@ -773,21 +777,21 @@ const styles = StyleSheet.create({
     adText: { fontSize: 16, fontWeight: 800, color: "#333333" },
 
     // Household Items Scroll
-    householdItemView: { width: "95%", backgroundColor: "white", height: 550, marginRight: 50, paddingHorizontal: 10, },
-    householdScroll: { flexDirection: "row", marginBottom: 30 },
-    householdItem: { backgroundColor: "", width: "20%" },
+    householdItemView: { width: "95%", backgroundColor: "white", height: 550, marginRight: 50, paddingHorizontal: 10, borderRadius: 20 },
+    householdScroll: { flexDirection: "row", marginBottom: 30, borderRadius: 20 },
+    householdItem: { width: "20%",  borderRadius: 20},
     householdText: { fontSize: 14, fontWeight: "800", marginTop: 10, letterSpacing: 1 },
     householdTextPrice: { fontSize: 12, fontWeight: 400, marginTop: 10, letterSpacing: 1 },
     householdTextRating: { fontSize: 12, fontWeight: 400, marginTop: 10, letterSpacing: 1 },
 
     // Main Items
     itemsList: { paddingBottom: 20 },
-    itemBox: { padding: 12, borderRadius: 8, marginVertical: 6, alignItems: "center" },
+    itemBox: { padding: 20, borderRadius: 20, marginVertical: 6, },
     itemText: { fontSize: 16, fontWeight: "bold" },
     noItems: { textAlign: "center", fontSize: 16, marginVertical: 20 },
 
     // Image Styles
-    image: { width: "auto", height: 150 }
+    image: { width: "100%", height: 150, }
 });
 
 export default HomeScreen;

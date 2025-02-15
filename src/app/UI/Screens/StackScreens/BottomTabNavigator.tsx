@@ -48,15 +48,15 @@ const BottomTabNavigator: React.FC = () => {
               iconName = "cart-outline";
               break;
             case "Profile":
-              return <Ionicons name="person-outline" size={size} color={color} />
-            // return user?.profilePic ? (
-            //   <Image
-            //     source={{ uri: user.profilePic }}
-            //     style={{ width: size, height: size, borderRadius: size / 2 }}
-            //   />
-            // ) : (
-            //   <Ionicons name="person-outline" size={size} color={color} />
-            // );
+              // return <Ionicons name="person-outline" size={size} color={color} />
+            return user?.profilePic ? (
+              <Image
+                source={{ uri: user.profilePic }}
+                style={{ width: size, height: size, borderRadius: size / 2 }}
+              />
+            ) : (
+              <Ionicons name="person-outline" size={size} color={color} />
+            );
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
