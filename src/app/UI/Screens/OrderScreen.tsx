@@ -16,7 +16,7 @@ const orderTabs = [
     { label: "Review", icon: "star-outline", sliceKey: "reviewOrders" },
 ];
 
-const OrderScreen: React.FC<any> = ({navigation}) => {
+const OrderScreen: React.FC<any> = ({ navigation }) => {
     const orders = useSelector((state: RootState) => state.order);
     const theme = useColorScheme();
     const colors = theme === "dark" ? Colors.dark : Colors.light;
@@ -45,7 +45,7 @@ const OrderScreen: React.FC<any> = ({navigation}) => {
                     renderItem={({ item }) => (
                         <View style={styles.tabContainer}>
                             <View style={styles.header}>
-                                <Ionicons name={item.icon} size={24} color={colors.primary} />
+                                <Ionicons name={item.icon || require("../../Assets/png/bed.png")} size={24} color={colors.primary} />
                                 <Text style={styles.headerText}>{item.label}</Text>
                             </View>
                             <FlatList
@@ -56,7 +56,7 @@ const OrderScreen: React.FC<any> = ({navigation}) => {
                                         <Text style={styles.orderText}>{order.name} - {order.status}</Text>
                                     </View>
                                 )}
-                            />
+                            />ƒ
                         </View>
                     )}
                     showsHorizontalScrollIndicator={false}

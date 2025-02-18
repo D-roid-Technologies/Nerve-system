@@ -8,10 +8,11 @@ import { useToast } from "react-native-toast-notifications";
 import * as Location from "expo-location";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Colors from "../../Utils/Theme";
-import { removeFromCart } from "../../Redux/slices/cartSlice";
+import { addOrUpdateCartItem, removeFromCart, } from "../../Redux/slices/cartSlice";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { Images } from "../../Utils/Images"
 
 type RootStackParamList = {
     CheckoutScreen: { selectedItems: any[] };
@@ -66,6 +67,71 @@ const CartScreen: React.FC<DetailsScreenProps> = ({ route, navigation }) => {
         toast.show("Selected items removed", { type: "success" });
     };
 
+    // Increase Quantity
+    const increaseQuantity = (id: string) => {
+        dispatch(addOrUpdateCartItem({
+            id, quantity: cartItems.find((item) => item.id === id)?.quantity! + 1,
+            name: "",
+            description: "",
+            category: "",
+            material: "",
+            dimensions: {
+                height: "",
+                width: "",
+                depth: ""
+            },
+            weight: "",
+            color: "",
+            price: 0,
+            rating: 0,
+            reviews: 0,
+            stock: 0,
+            image: null,
+            features: [],
+            seller: {
+                name: "",
+                location: "",
+                contact: "",
+                rating: 0
+            },
+            tags: []
+        }));
+    };
+
+    // Decrease Quantity
+    const decreaseQuantity = (id: string) => {
+        const item = cartItems.find((item) => item.id === id);
+        if (item && item.quantity > 1) {
+            dispatch(addOrUpdateCartItem({
+                id, quantity: item.quantity - 1,
+                name: "",
+                description: "",
+                category: "",
+                material: "",
+                dimensions: {
+                    height: "",
+                    width: "",
+                    depth: ""
+                },
+                weight: "",
+                color: "",
+                price: 0,
+                rating: 0,
+                reviews: 0,
+                stock: 0,
+                image: null,
+                features: [],
+                seller: {
+                    name: "",
+                    location: "",
+                    contact: "",
+                    rating: 0
+                },
+                tags: []
+            }));
+        }
+    };
+
     // Price Calculation for selected items only
     const calculateTotal = () => {
         const selectedCartItems = cartItems.filter((item) => selectedItems.includes(item.id));
@@ -113,7 +179,11 @@ const CartScreen: React.FC<DetailsScreenProps> = ({ route, navigation }) => {
                         </TouchableOpacity>
 
                         {/* Image */}
-                        <Image source={item.image} style={styles.itemImage} />
+                        <Image source={item.image || require("../../Assets/png/bed.png")} style={styles.itemImage} />
+                        {/* <Image
+                            source={item.image ? { uri: item.image } : Images.lamp}
+                            style={styles.itemImage}
+                        /> */}
 
                         {/* Details */}
                         <View style={styles.itemDetails}>
@@ -121,7 +191,17 @@ const CartScreen: React.FC<DetailsScreenProps> = ({ route, navigation }) => {
                             <Text style={styles.itemSeller}>{item.seller.name} | {item.category}</Text>
                             <Text style={styles.itemPrice}>£{(item.price * 1.2).toFixed(2)}</Text>
                             <Text style={styles.itemTax}>+ Tax Included</Text>
-                            <Text style={styles.itemQuantity}>Quantity: {item.quantity}</Text>
+
+                            {/* Quantity Control */}
+                            {/* <View style={styles.quantityContainer}>
+                                <TouchableOpacity onPress={() => decreaseQuantity(item.id)}>
+                                    <Ionicons name="remove-circle-outline" size={24} color="red" />
+                                </TouchableOpacity>
+                                <Text style={styles.itemQuantity}>{item.quantity}</Text>
+                                <TouchableOpacity onPress={() => increaseQuantity(item.id)}>
+                                    <Ionicons name="add-circle-outline" size={24} color="green" />
+                                </TouchableOpacity>
+                            </View> */}
                         </View>
                     </View>
                 )}
@@ -153,13 +233,13 @@ const CartScreen: React.FC<DetailsScreenProps> = ({ route, navigation }) => {
             <TouchableOpacity
                 style={styles.checkoutButton}
                 onPress={() =>
-                    cartItems.length === 0
+                    selectedItems.length === 0
                         ? navigation.navigate("Search")
                         : navigation.navigate("CheckoutScreen", { selectedItems })
                 }
             >
                 <Text style={styles.checkoutButtonText}>
-                    {cartItems.length === 0 ? "Find Items you like" : `Checkout (${selectedItems.length} items)`}
+                    {selectedItems.length === 0 ? "Find Items you like" : `Checkout (${selectedItems.length} items)`}
                 </Text>
             </TouchableOpacity>
         </SafeAreaView>
@@ -167,6 +247,7 @@ const CartScreen: React.FC<DetailsScreenProps> = ({ route, navigation }) => {
 };
 
 export default CartScreen;
+
 
 const styles = StyleSheet.create({
     container: { flex: 1, padding: 16, backgroundColor: "#fff" },
@@ -183,7 +264,7 @@ const styles = StyleSheet.create({
 
     // Cart Item
     itemContainer: { flexDirection: "row", alignItems: "center", paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: "#ddd" },
-    itemImage: { width: 60, height: 60, borderRadius: 8 },
+    itemImage: { width: 60, height: 60, borderRadius: 8, marginRight: 10, marginLeft: 10 },
     itemDetails: { flex: 1 },
     itemTitle: { fontSize: 16, fontWeight: "bold" },
     itemSeller: { fontSize: 12, color: "gray" },
@@ -200,4 +281,10 @@ const styles = StyleSheet.create({
     summaryRow: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 4 },
     summaryRowTotal: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 10 },
     summaryTotalText: { fontSize: 18, fontWeight: "bold" },
+    quantityContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 10, // Ensures spacing between buttons and text
+        marginTop: 5,
+    },
 });

@@ -656,8 +656,8 @@ const HomeScreen: React.FC<any> = ({ navigation }) => {
                     <Image source={Images.logoInner} style={styles.mainLogo} />
                 </View>
                 <TouchableOpacity onPress={() => toast.show("Leads to Notification Screen")}>
-                    {/* <Ionicons name="notifications-outline" size={28} color={colors.text} /> */}
-                    <Ionicons name="person-outline" size={28} color={colors.text} />
+                    <Ionicons name="notifications-outline" size={28} color={colors.text} />
+                    {/* <Ionicons name="person-outline" size={28} color={colors.text} /> */}
                 </TouchableOpacity>
             </View>
 
@@ -779,7 +779,7 @@ const styles = StyleSheet.create({
     // Household Items Scroll
     householdItemView: { width: "95%", backgroundColor: "white", height: 550, marginRight: 50, paddingHorizontal: 10, borderRadius: 20 },
     householdScroll: { flexDirection: "row", marginBottom: 30, borderRadius: 20 },
-    householdItem: { width: "20%",  borderRadius: 20},
+    householdItem: { width: "20%", borderRadius: 20 },
     householdText: { fontSize: 14, fontWeight: "800", marginTop: 10, letterSpacing: 1 },
     householdTextPrice: { fontSize: 12, fontWeight: 400, marginTop: 10, letterSpacing: 1 },
     householdTextRating: { fontSize: 12, fontWeight: 400, marginTop: 10, letterSpacing: 1 },

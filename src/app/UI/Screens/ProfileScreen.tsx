@@ -30,6 +30,7 @@ type RootStackParamList = {
     ReviewsScreen: undefined;
     Login: undefined;
     Home: undefined;
+    UploadItemScreen: undefined;
 };
 
 type ScreenProps<T extends keyof RootStackParamList> = {
@@ -97,11 +98,13 @@ const ProfileScreen: React.FC<ScreenProps<'EditProfileScreen'>> = ({ route, navi
                     {/* Country & Settings */}
                     <View style={styles.settingsContainer}>
                         {/* <Text style={[styles.countryText, { color: colors.text }]}>{user.country}</Text> */}
+                        <Pressable onPress={() => navigation.navigate("UploadItemScreen")}>
+                            {/* <Ionicons name="add-circle-outline" size={24} color={colors.text} /> */}
+                            <Ionicons name="cloud-upload-outline" size={24} color={colors.primary} />
+                            {/* <Ionicons name="notifications-outline" size={24} color={colors.text} /> */}
+                        </Pressable>
                         <Pressable onPress={() => navigation.navigate("SettingsScreen")}>
                             <Ionicons name="settings-outline" size={24} color={colors.text} />
-                        </Pressable>
-                        <Pressable onPress={() => navigation.navigate("NotificationsScreen")}>
-                            <Ionicons name="notifications-outline" size={24} color={colors.text} />
                         </Pressable>
                     </View>
                 </View>
@@ -111,7 +114,7 @@ const ProfileScreen: React.FC<ScreenProps<'EditProfileScreen'>> = ({ route, navi
                     <View style={styles.trackHeader}>
                         <Text style={[styles.trackTitle, { color: colors.text }]}>Track Orders</Text>
                         <TouchableOpacity onPress={() => navigation.navigate("OrdersScreen")}>
-                            <Text style={[styles.viewAllText, {color: colors.primary}]}>View All</Text>
+                            <Text style={[styles.viewAllText, { color: colors.primary }]}>View All</Text>
                         </TouchableOpacity>
                     </View>
                     <View style={styles.orderStatus}>
@@ -124,10 +127,10 @@ const ProfileScreen: React.FC<ScreenProps<'EditProfileScreen'>> = ({ route, navi
                             { label: "Returned", icon: "refresh-circle-outline" },
                             { label: "Review", icon: "star-outline" },
                         ].map((item, index) => (
-                            <TouchableOpacity key={index} style={styles.orderItem}>
+                            <View key={index} style={styles.orderItem}>
                                 <Ionicons name={item.icon} size={28} color={colors.primary} />
                                 <Text style={styles.orderLabel}>{item.label}</Text>
-                            </TouchableOpacity>
+                            </View>
                         ))}
                     </View>
                 </View>
@@ -187,7 +190,7 @@ const styles = StyleSheet.create({
     orderTrackingContainer: { marginBottom: 20 },
     trackHeader: { flexDirection: "row", justifyContent: "space-between", marginBottom: 10 },
     trackTitle: { fontSize: 18, fontWeight: "bold" },
-    viewAllText: {  },
+    viewAllText: {},
     orderStatus: { flexDirection: "row", justifyContent: "space-between", flexWrap: "wrap" },
     orderItem: { alignItems: "center", width: "30%", marginVertical: 10 },
     orderLabel: { fontSize: 14, marginTop: 5 },

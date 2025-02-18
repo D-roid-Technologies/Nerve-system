@@ -11,6 +11,9 @@ export const store = configureStore({
     order: orderRducer,
     payment: paymentReducer
   },
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+    serializableCheck: false, // 🔥 Disable deep-check for performance
+  }),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

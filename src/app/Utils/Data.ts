@@ -9,7 +9,7 @@ interface OnboardingItem {
     icon: React.ReactNode;
 }
 
-interface Item {
+export interface Item {
     name: string;
     description: string;
     category: string;
@@ -25,7 +25,7 @@ interface Item {
     rating: number;
     reviews: number;
     stock: number;
-    image: ImageSourcePropType;
+    image: ImageSourcePropType | null;
     features: string[];
     seller: {
         name: string;

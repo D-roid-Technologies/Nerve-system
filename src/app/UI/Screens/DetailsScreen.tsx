@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useReducer } from 'react';
 import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet, useColorScheme, ImageBackground, ScrollView } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { RouteProp, useNavigation } from '@react-navigation/native';
@@ -8,8 +8,8 @@ import { allItems } from '../../Utils/Data';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useDispatch } from 'react-redux';
-import { addToCart, updateCartItemQuantity } from '../../Redux/slices/cartSlice';
-import { store } from '../../Redux/store';
+import { addOrUpdateCartItem } from '../../Redux/slices/cartSlice';
+import { RootState, store } from '../../Redux/store';
 
 type RootStackParamList = {
     DetailsScreen: { item: any; index: number };
@@ -41,25 +41,26 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation }) => {
     const { item, index } = route?.params as { item: any; index: number };
     // console.log({ id: index, ...item })
 
+
+    const generateUniqueString = (length: number = 10): string => {
+        if (length < 6 || length > 15) {
+            throw new Error("Length must be between 6 and 15 characters.");
+        }
+
+        const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        let uniqueString = "";
+
+        for (let i = 0; i < length; i++) {
+            const randomIndex = Math.floor(Math.random() * characters.length);
+            uniqueString += characters[randomIndex];
+        }
+
+        return uniqueString;
+    };
     const pushToCart = () => {
-        const state = store.getState(); // Get the current state
-        // const existingItem = state.cart.items.find((cartItem) => cartItem.id === item.id);
-        // console.log(existingItem)
-        dispatch(addToCart({...item, quantity: 1}));
-
-        // if (existingItem) {
-        //     // If item exists, increase quantity
-        //     dispatch(updateCartItemQuantity({ id: item.id, quantity: existingItem.quantity + 1 }));
-        // } else {
-        //     // If item does not exist, add it with quantity 1
-        //     dispatch(addToCart({ ...item, quantity: 1 }));
-        // }
-
+        dispatch(addOrUpdateCartItem({ ...item, quantity: 1, id: generateUniqueString(7) }));
         toast.show(`${item.name} added to cart`, { type: 'success' });
     };
-
-
-
 
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
