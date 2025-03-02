@@ -1,4 +1,3 @@
-import { IconType } from "react-icons";
 import { ImageSourcePropType } from "react-native";
 import { Images } from "./Images";
 

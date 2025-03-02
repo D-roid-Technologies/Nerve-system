@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
-    View, Text, FlatList, Image, TouchableOpacity, StyleSheet, useColorScheme
+    View, Text, FlatList, TouchableOpacity, StyleSheet, useColorScheme, Image
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../Redux/store";
@@ -179,11 +179,20 @@ const CartScreen: React.FC<DetailsScreenProps> = ({ route, navigation }) => {
                         </TouchableOpacity>
 
                         {/* Image */}
-                        <Image source={item.image || require("../../Assets/png/bed.png")} style={styles.itemImage} />
-                        {/* <Image
-                            source={item.image ? { uri: item.image } : Images.lamp}
+                        {/* <Image source={item.image} style={styles.itemImage} /> */}
+                        <Image
+                            source={
+                                item.image
+                                    ? typeof item.image === 'number'
+                                        ? item.image // Local image (require())
+                                        : { uri: item.image } // Remote image
+                                    : require('..//../Assets/png/bed.png') // Fallback image
+                            }
                             style={styles.itemImage}
-                        /> */}
+                            onError={() => console.log('Image load error:', item.image)} // Debugging
+                        />
+
+                        {/* item.image ? { uri: item.image } : Images.lamp */}
 
                         {/* Details */}
                         <View style={styles.itemDetails}>

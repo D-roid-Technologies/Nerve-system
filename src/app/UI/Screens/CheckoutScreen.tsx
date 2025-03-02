@@ -6,7 +6,7 @@ import {
     View,
     FlatList,
     TextInput,
-    ScrollView
+    Modal
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -15,28 +15,17 @@ import { AppDispatch, RootState } from "../../Redux/store";
 import { useToast } from "react-native-toast-notifications";
 import Colors from "../../Utils/Theme";
 import { processPayment } from "../../Redux/slices/paymentSlice";
+import { addOrder } from "../../Redux/slices/orderSlice";
 import { RouteProp, ParamListBase } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useColorScheme } from "react-native";
+import { clearCart } from "../../Redux/slices/cartSlice";
+import { addNotification } from "../../Redux/slices/notificationSlice";
 
-// Define navigation types
-interface RootStackParamList extends ParamListBase {
-    CheckoutScreen: undefined;
-    PaymentScreen: undefined;
-    SuccessScreen: undefined;
-    UnsuccessfulScreen: undefined;
-}
-
-interface CheckoutScreenProps {
-    route: RouteProp<RootStackParamList, "CheckoutScreen">;
-    navigation: NativeStackNavigationProp<RootStackParamList, "CheckoutScreen">;
-}
-
-const CheckoutScreen: React.FC<CheckoutScreenProps> = ({ navigation }) => {
+const CheckoutScreen: React.FC<any> = ({ navigation }) => {
     const dispatch = useDispatch<AppDispatch>();
     const toast = useToast();
     const cartItems = useSelector((state: RootState) => state.cart.items);
-    // console.log(cartItems)
     const userDetails = useSelector((state: RootState) => state.auth);
     const theme = useColorScheme();
     const colors = theme === "dark" ? Colors.dark : Colors.light;
@@ -44,20 +33,93 @@ const CheckoutScreen: React.FC<CheckoutScreenProps> = ({ navigation }) => {
     const [email, setEmail] = useState(userDetails.user?.email);
     const [phone, setPhone] = useState(userDetails.user?.phone);
     const [address, setAddress] = useState(userDetails.user?.address);
+    const [paymentMethod, setPaymentMethod] = useState<string | null>(null);
+    const [modalVisible, setModalVisible] = useState(false);
+    // const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null);
+    const [cardDetails, setCardDetails] = useState({
+        number: "",
+        expiry: "",
+        cvv: "",
+        fullName: ""
+    });
+
+    // const handlePayment = async () => {
+    //     setModalVisible(false);
+    //     try {
+    //         const success = await dispatch(processPayment(cartItems)).unwrap();
+    //         if (success) {
+    //             cartItems.forEach(item => dispatch(addOrder({ category: "paidOrders", order: item })));
+    //             dispatch(clearCart());
+    //             navigation.navigate("SuccessScreen");
+    //         } else {
+    //             navigation.navigate("UnsuccessfulScreen");
+    //         }
+    //     } catch (error) {
+    //         toast.show("Payment failed, please try again.", { type: "danger" });
+    //         navigation.navigate("UnsuccessfulScreen");
+    //     }
+    // };
 
     const handlePayment = async () => {
+        setModalVisible(false);
         try {
             const success = await dispatch(processPayment(cartItems)).unwrap();
             if (success) {
+                // Convert cart items to OrderItem format with status "paid"
+                cartItems.forEach(item => {
+                    dispatch(addOrder({
+                        category: "paidOrders",
+                        order: { ...item, status: "paid" } // ✅ Add required 'status' field
+                    }));
+                });
+
+                // Clear the cart after successful payment
+                dispatch(clearCart());
+
+                // Add a notification for successful payment with item name and amount
+                cartItems.forEach(item => {
+                    const successNotification = {
+                        id: new Date().toISOString(), // Unique ID based on current timestamp
+                        title: "Payment Successful",
+                        message: `Your payment for ${item.name} ${item.price} was successful. Your order has been processed.`,
+                        timestamp: new Date().toLocaleTimeString(),
+                        read: false
+                    };
+                    dispatch(addNotification(successNotification));
+                });
+
+                // Navigate to success screen
                 navigation.navigate("SuccessScreen");
             } else {
+                // Add a notification for unsuccessful payment
+                const failureNotification = {
+                    id: new Date().toISOString(), // Unique ID based on current timestamp
+                    title: "Payment Failed",
+                    message: "Your payment could not be processed. Please try again.",
+                    timestamp: new Date().toLocaleTimeString(),
+                    read: false
+                };
+                dispatch(addNotification(failureNotification));
+
                 navigation.navigate("UnsuccessfulScreen");
             }
         } catch (error) {
+            // Handle error and add failure notification
+            const failureNotification = {
+                id: new Date().toISOString(), // Unique ID based on current timestamp
+                title: "Payment Error",
+                message: "An error occurred during payment. Please try again.",
+                timestamp: new Date().toLocaleTimeString(),
+                read: false
+            };
+            dispatch(addNotification(failureNotification));
+
             toast.show("Payment failed, please try again.", { type: "danger" });
             navigation.navigate("UnsuccessfulScreen");
         }
     };
+
+
 
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -67,93 +129,119 @@ const CheckoutScreen: React.FC<CheckoutScreenProps> = ({ navigation }) => {
                     <Text style={[styles.headerText, { color: colors.text }]}>Checkout</Text>
                 </TouchableOpacity>
             </View>
-
             <FlatList
                 data={cartItems}
                 keyExtractor={(item, index) => index.toString()}
                 ListHeaderComponent={
-                    <>
-                        <View style={styles.inputContainer}>
-                            <Text style={[styles.label, { color: colors.primary }]}>Email</Text>
-                            <TextInput
-                                style={styles.input}
-                                value={email}
-                                onChangeText={setEmail}
-                                keyboardType="email-address"
-                            />
-                        </View>
-
-                        <View style={styles.inputContainer}>
-                            <Text style={[styles.label, { color: colors.primary }]}>Phone Number</Text>
-                            <TextInput
-                                style={styles.input}
-                                value={phone}
-                                onChangeText={setPhone}
-                                keyboardType="phone-pad"
-                            />
-                        </View>
-
-                        <View style={styles.inputContainer}>
-                            <Text style={[styles.label, { color: colors.primary }]}>Address</Text>
-                            <TextInput
-                                style={styles.input}
-                                value={address}
-                                onChangeText={setAddress}
-                                multiline
-                            />
-                        </View>
-                    </>
+                    <View>
+                        <TextInput placeholder="Email" value={email} onChangeText={setEmail} style={styles.input} />
+                        <TextInput placeholder="Phone" value={phone} onChangeText={setPhone} style={styles.input} />
+                        <TextInput placeholder="Address" value={address} onChangeText={setAddress} style={styles.input} />
+                    </View>
                 }
                 renderItem={({ item }) => (
-                    <View style={styles.itemContainer}>
-                        <Text style={[styles.itemText, { color: colors.text }]}>{item.name} - ${item.price}</Text>
-                    </View>
+                    <View style={styles.itemContainer}><Text>{item.name} - ${item.price}</Text></View>
                 )}
-                contentContainerStyle={{ paddingBottom: 20 }} // Add padding to prevent last item cutoff
             />
 
-            <TouchableOpacity style={[styles.button, { backgroundColor: colors.primary }]} onPress={handlePayment}>
+            <TouchableOpacity style={[styles.button, {backgroundColor: colors.primary}]} onPress={() => setModalVisible(true)}>
                 <Text style={styles.buttonText}>Proceed to Payment</Text>
             </TouchableOpacity>
+
+            <Modal visible={modalVisible} animationType="slide" transparent>
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        {/* Close Button */}
+                        <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
+                            <Ionicons name="close" size={24} color="black" />
+                        </TouchableOpacity>
+
+                        {!paymentMethod ? (
+                            <>
+                                <Text style={styles.modalTitle}>Select Payment Method</Text>
+                                <TouchableOpacity onPress={() => setPaymentMethod("card")} style={styles.paymentOption}>
+                                    <Text style={styles.paymentOptionText}>Debit/Credit Card</Text>
+                                </TouchableOpacity>
+                            </>
+                        ) : (
+                            <>
+                                <TextInput
+                                    placeholder="Card Number"
+                                    onChangeText={text => setCardDetails({ ...cardDetails, number: text })}
+                                    style={styles.input}
+                                    keyboardType="numeric"
+                                />
+                                <TextInput
+                                    placeholder="Expiry Date (MM/YY)"
+                                    onChangeText={text => setCardDetails({ ...cardDetails, expiry: text })}
+                                    style={styles.input}
+                                />
+                                <TextInput
+                                    placeholder="CVV"
+                                    onChangeText={text => setCardDetails({ ...cardDetails, cvv: text })}
+                                    style={styles.input}
+                                    secureTextEntry
+                                    keyboardType="numeric"
+                                />
+                                <TextInput
+                                    placeholder="Full Name"
+                                    onChangeText={text => setCardDetails({ ...cardDetails, fullName: text })}
+                                    style={styles.input}
+                                />
+                                <TouchableOpacity style={styles.button} onPress={handlePayment}>
+                                    <Text style={styles.buttonText}>Pay Now</Text>
+                                </TouchableOpacity>
+                            </>
+                        )}
+                    </View>
+                </View>
+            </Modal>
         </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
     container: { flex: 1, padding: 16 },
+    input: { borderWidth: 1, borderColor: "#ccc", borderRadius: 8, padding: 10, marginVertical: 5 },
+    itemContainer: { padding: 10, borderBottomWidth: 1, borderBottomColor: "#ccc" },
+    button: { padding: 15, borderRadius: 8, alignItems: "center", marginTop: 20 },
+    buttonText: { color: "white", fontSize: 16, fontWeight: "bold" },
+    modalContainer: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "rgba(0,0,0,0.5)" },
+    modalContent: { backgroundColor: "white", padding: 20, borderRadius: 10, width: "80%" },
+    paymentOption: { padding: 10, borderBottomWidth: 1, borderBottomColor: "#ccc" },
     header: {
         flexDirection: "row",
         alignItems: "center",
-        marginBottom: 20,
+        borderBottomWidth: 1,
+        borderBottomColor: "#ccc",
+        marginBottom: 20
     },
     backView: {
         flexDirection: "row",
         alignItems: "center",
         gap: 5,
     },
-    headerText: { fontSize: 20, fontWeight: "bold" },
-    itemContainer: {
-        padding: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: "#ccc",
+    headerText: {
+        fontSize: 20,
+        fontWeight: "bold",
+        marginLeft: 10,
     },
-    itemText: { fontSize: 16 },
-    inputContainer: { marginVertical: 10 },
-    label: { fontSize: 14, marginBottom: 5 },
-    input: {
-        borderWidth: 1,
-        borderColor: "#ccc",
-        borderRadius: 8,
-        padding: 10,
+    closeButton: {
+        position: "absolute",
+        top: 10,
+        right: 10,
+        padding: 5,
     },
-    button: {
-        backgroundColor: "#007bff",
-        padding: 15,
-        borderRadius: 8,
-        alignItems: "center",
-        marginTop: 20,
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: "bold",
+        marginBottom: 15,
     },
-    buttonText: { color: "white", fontSize: 16, fontWeight: "bold" },
+    paymentOptionText: {
+        color: "gray",
+        fontSize: 16,
+        fontWeight: "bold",
+    },
 });
 
 export default CheckoutScreen;

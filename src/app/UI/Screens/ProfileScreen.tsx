@@ -13,17 +13,16 @@ import {
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { RouteProp, useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../Redux/store"; // Ensure Redux store is properly configured
+import { RootState } from "../../Redux/store";
 import Colors from "../../Utils/Theme";
 import { logout } from "../../Redux/slices/authSlice";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useToast } from "react-native-toast-notifications";
 
-
 type RootStackParamList = {
-    ProfileScreen: undefined; // No parameters needed
-    EditProfileScreen: undefined; // Empty object if no params are required
+    ProfileScreen: undefined;
+    EditProfileScreen: undefined;
     SettingsScreen: undefined;
     NotificationsScreen: undefined;
     OrdersScreen: undefined;
@@ -38,7 +37,6 @@ type ScreenProps<T extends keyof RootStackParamList> = {
     navigation: NativeStackNavigationProp<RootStackParamList, T>;
 };
 
-// Profile Screen Component
 const ProfileScreen: React.FC<ScreenProps<'EditProfileScreen'>> = ({ route, navigation }) => {
     const theme = useColorScheme();
     const colors = theme === "dark" ? Colors.dark : Colors.light;
@@ -46,6 +44,8 @@ const ProfileScreen: React.FC<ScreenProps<'EditProfileScreen'>> = ({ route, navi
     const toast = useToast();
 
     const user = useSelector((state: RootState) => state.auth.user);
+    const orders = useSelector((state: RootState) => state.order);
+
     const handleSignOut = () => {
         Alert.alert("Sign Out", "Are you sure you want to log out?", [
             { text: "Cancel", style: "cancel" },
@@ -54,23 +54,31 @@ const ProfileScreen: React.FC<ScreenProps<'EditProfileScreen'>> = ({ route, navi
                 onPress: () => {
                     dispatch(logout());
                     toast.show("You have logged out successfully", { type: "success" });
-                    navigation.navigate("Home")
+                    navigation.navigate("Home");
                 },
             },
         ]);
     };
 
+    const orderCounts = {
+        paidOrders: orders.paidOrders.length,
+        sealedOrders: orders.sealedOrders.length,
+        dispatchedOrders: orders.dispatchedOrders.length,
+        arrivedOrders: orders.arrivedOrders.length,
+        confirmedOrders: orders.confirmedOrders.length,
+        returnedOrders: orders.returnedOrders.length,
+        reviewOrders: orders.reviewOrders.length,
+    };
+
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
             <ScrollView showsVerticalScrollIndicator={false}>
-                {/* Profile & Settings Section */}
                 <View style={styles.profileContainer}>
-
                     <TouchableOpacity
                         style={styles.profileInfo}
                         onPress={() => {
                             if (!user || !user.profilePic) {
-                                navigation.navigate("Login"); // Navigate to Login if user is null or profile picture is missing
+                                navigation.navigate("Login");
                             } else {
                                 navigation.navigate("EditProfileScreen");
                             }
@@ -78,30 +86,24 @@ const ProfileScreen: React.FC<ScreenProps<'EditProfileScreen'>> = ({ route, navi
                     >
                         <Image
                             source={
-                                user && user.profilePic // Check if user and user.profilePicture exist
+                                user?.profilePic
                                     ? { uri: user.profilePic }
-                                    : require("../../Assets/png/profile-icon.png") // Replace with your default profile icon
+                                    : require("../../Assets/png/profile-icon.png")
                             }
                             style={styles.profileImage}
                         />
                         <View>
                             <Text style={[styles.profileName, { color: colors.text }]}>
-                                {user && user.firstName && user.lastName
+                                {user?.firstName && user?.lastName
                                     ? `${user.firstName} ${user.lastName}`
-                                    : "Please log in"} {/* Check if user exists and has first/last name */}
+                                    : "Please log in"}
                             </Text>
                         </View>
                     </TouchableOpacity>
 
-
-
-                    {/* Country & Settings */}
                     <View style={styles.settingsContainer}>
-                        {/* <Text style={[styles.countryText, { color: colors.text }]}>{user.country}</Text> */}
                         <Pressable onPress={() => navigation.navigate("UploadItemScreen")}>
-                            {/* <Ionicons name="add-circle-outline" size={24} color={colors.text} /> */}
                             <Ionicons name="cloud-upload-outline" size={24} color={colors.primary} />
-                            {/* <Ionicons name="notifications-outline" size={24} color={colors.text} /> */}
                         </Pressable>
                         <Pressable onPress={() => navigation.navigate("SettingsScreen")}>
                             <Ionicons name="settings-outline" size={24} color={colors.text} />
@@ -119,19 +121,26 @@ const ProfileScreen: React.FC<ScreenProps<'EditProfileScreen'>> = ({ route, navi
                     </View>
                     <View style={styles.orderStatus}>
                         {[
-                            { label: "Paid", icon: "card-outline" },
-                            { label: "Sealed", icon: "lock-closed-outline" },
-                            { label: "Dispatched", icon: "cube-outline" },
-                            { label: "Arrived", icon: "airplane-outline" },
-                            { label: "Confirmed", icon: "checkmark-circle-outline" },
-                            { label: "Returned", icon: "refresh-circle-outline" },
-                            { label: "Review", icon: "star-outline" },
-                        ].map((item, index) => (
-                            <View key={index} style={styles.orderItem}>
-                                <Ionicons name={item.icon} size={28} color={colors.primary} />
-                                <Text style={styles.orderLabel}>{item.label}</Text>
-                            </View>
-                        ))}
+                            { label: "Paid", icon: "card-outline", count: orderCounts.paidOrders },
+                            { label: "Sealed", icon: "lock-closed-outline", count: orderCounts.sealedOrders },
+                            { label: "Dispatched", icon: "cube-outline", count: orderCounts.dispatchedOrders },
+                            { label: "Arrived", icon: "airplane-outline", count: orderCounts.arrivedOrders },
+                            { label: "Confirmed", icon: "checkmark-circle-outline", count: orderCounts.confirmedOrders },
+                            { label: "Returned", icon: "refresh-circle-outline", count: orderCounts.returnedOrders },
+                            { label: "Review", icon: "star-outline", count: orderCounts.reviewOrders },
+                        ].map((item, index) => {
+                            // const orderCount = orders[item.key as keyof typeof orders].length;
+                            // const count = Array.isArray(state[category]) ? state[category].length : 0;
+
+                            return (
+                                <View key={index} style={styles.orderItem}>
+                                    <Ionicons name={item.icon} size={28} color={colors.primary} />
+                                    <Text style={styles.orderLabel}>
+                                        {item.label} ({item.count})
+                                    </Text>
+                                </View>
+                            );
+                        })}
                     </View>
                 </View>
 
@@ -142,7 +151,10 @@ const ProfileScreen: React.FC<ScreenProps<'EditProfileScreen'>> = ({ route, navi
                     <Text style={styles.detailText}>Phone: {user?.phone}</Text>
                     <Text style={styles.detailText}>Address: {user?.address}</Text>
                     <Text style={styles.detailText}>Verified: {user?.verified ? "Yes ✅" : "No ❌"}</Text>
-                    <TouchableOpacity style={styles.editProfileBtn} onPress={() => navigation.navigate("EditProfileScreen")}>
+                    <TouchableOpacity
+                        style={styles.editProfileBtn}
+                        onPress={() => navigation.navigate("EditProfileScreen")}
+                    >
                         <Text style={styles.editProfileText}>Edit Profile</Text>
                     </TouchableOpacity>
                 </View>
@@ -170,7 +182,6 @@ export default ProfileScreen;
 const styles = StyleSheet.create({
     container: { flex: 1, padding: 16 },
 
-    // Profile Section
     profileContainer: {
         flexDirection: "row",
         justifyContent: "space-between",
@@ -180,32 +191,26 @@ const styles = StyleSheet.create({
     profileInfo: { flexDirection: "row", alignItems: "center" },
     profileImage: { width: 50, height: 50, borderRadius: 25, marginRight: 10 },
     profileName: { fontSize: 18, fontWeight: "bold" },
-    profileSubText: { fontSize: 14, color: "gray" },
 
-    // Settings Section
     settingsContainer: { flexDirection: "row", alignItems: "center", gap: 12 },
-    countryText: { fontSize: 16 },
 
-    // Order Tracking
     orderTrackingContainer: { marginBottom: 20 },
     trackHeader: { flexDirection: "row", justifyContent: "space-between", marginBottom: 10 },
     trackTitle: { fontSize: 18, fontWeight: "bold" },
-    viewAllText: {},
+    viewAllText: { fontSize: 14, color: Colors.light.primary },
+
     orderStatus: { flexDirection: "row", justifyContent: "space-between", flexWrap: "wrap" },
     orderItem: { alignItems: "center", width: "30%", marginVertical: 10 },
     orderLabel: { fontSize: 14, marginTop: 5 },
 
-    // User Details
     userDetails: { marginBottom: 20 },
     sectionTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 10 },
     detailText: { fontSize: 16, marginBottom: 5 },
     editProfileBtn: { backgroundColor: Colors.light.secondary, padding: 10, borderRadius: 8, marginTop: 10 },
     editProfileText: { color: "white", textAlign: "center", fontSize: 16 },
 
-    // Review Section
     reviewSection: { marginBottom: 20 },
 
-    // Sign Out Button
     signOutBtn: { backgroundColor: Colors.light.warning, padding: 12, borderRadius: 8, marginTop: 20 },
     signOutText: { color: "white", textAlign: "center", fontSize: 16 },
 });

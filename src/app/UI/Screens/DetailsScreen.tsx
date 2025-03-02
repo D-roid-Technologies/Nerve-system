@@ -39,6 +39,7 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation }) => {
     const dispatch = useDispatch();
     const colors = theme === 'dark' ? Colors.dark : Colors.light;
     const { item, index } = route?.params as { item: any; index: number };
+
     // console.log({ id: index, ...item })
 
 
@@ -58,7 +59,8 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation }) => {
         return uniqueString;
     };
     const pushToCart = () => {
-        dispatch(addOrUpdateCartItem({ ...item, quantity: 1, id: generateUniqueString(7) }));
+        // console.log('Item Image Type:', typeof item.image, 'Value:', item.image);
+        dispatch(addOrUpdateCartItem({ ...item, quantity: 1, id: generateUniqueString(7), image: typeof item.image === 'number' ? item.image : { uri: item.image } }));
         toast.show(`${item.name} added to cart`, { type: 'success' });
     };
 
@@ -66,7 +68,7 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation }) => {
         <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
 
             {/* Background Image */}
-            <ImageBackground source={item.image} style={styles.imageBackground} resizeMode="cover">
+            <ImageBackground source={typeof item.image === 'number' ? item.image : { uri: item.image || '' }} style={styles.imageBackground} resizeMode="cover">
                 {/* Header Section */}
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => navigation.goBack()}>

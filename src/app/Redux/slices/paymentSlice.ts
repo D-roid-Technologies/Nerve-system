@@ -5,7 +5,8 @@ import { RootState } from '../store';
 const mockPaymentAPI = async (cartItems: any[]) => {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
-            const isSuccess = Math.random() > 0.2; // 80% chance of success
+            const isSuccess = Math.random() > 0.2;
+            console.log(isSuccess, "line 9") // 80% chance of success
             isSuccess ? resolve({ status: 'success' }) : reject(new Error('Payment failed'));
         }, 2000);
     });

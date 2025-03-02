@@ -1,9 +1,10 @@
 import React from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, useColorScheme } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { ParamListBase } from "@react-navigation/native";
+import Colors from "../../Utils/Theme";
 
 interface RootStackParamList extends ParamListBase {
     UnsuccessfulScreen: undefined;
@@ -15,6 +16,8 @@ interface UnsuccessfulScreenProps {
 }
 
 const UnsuccessfulScreen: React.FC<UnsuccessfulScreenProps> = ({ navigation }) => {
+    const theme = useColorScheme();
+    const colors = theme === "dark" ? Colors.dark : Colors.light;
     return (
         <SafeAreaView style={styles.container}>
             <Ionicons name="close-circle-outline" size={80} color="red" />
@@ -23,6 +26,9 @@ const UnsuccessfulScreen: React.FC<UnsuccessfulScreenProps> = ({ navigation }) =
 
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("CheckoutScreen")}>
                 <Text style={styles.buttonText}>Retry Payment</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.button, { backgroundColor: colors.primary }]} onPress={() => navigation.navigate("MainApp")}>
+                <Text style={styles.buttonText}>Go to Home</Text>
             </TouchableOpacity>
         </SafeAreaView>
     );

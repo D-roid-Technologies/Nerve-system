@@ -17,6 +17,8 @@ import { Ionicons } from "@expo/vector-icons";
 import Colors from "../../Utils/Theme";
 import { Images } from "../../Utils/Images";
 import { useToast } from "react-native-toast-notifications";
+import { useSelector } from "react-redux";
+import { RootState } from "../../Redux/store";
 
 // Define category type
 type CategoryType = "Explore" | "Mens" | "Womens" | "Gadgets" | "Automotive";
@@ -647,6 +649,8 @@ const HomeScreen: React.FC<any> = ({ navigation }) => {
     const colors = theme === "dark" ? Colors.dark : Colors.light;
     const [selectedCategory, setSelectedCategory] = useState<CategoryType>("Explore");
     const toast = useToast()
+    const notifications = useSelector((state: RootState) => state.notifications.notifications);
+    const unreadCount = notifications.filter(notification => !notification.read).length;
 
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -655,9 +659,33 @@ const HomeScreen: React.FC<any> = ({ navigation }) => {
                 <View style={styles.imageView}>
                     <Image source={Images.logoInner} style={styles.mainLogo} />
                 </View>
-                <TouchableOpacity onPress={() => toast.show("Leads to Notification Screen")}>
+                {/* Notification Icon */}
+                {/* <TouchableOpacity onPress={() => navigation.navigate("NotificationsScreen")}>
                     <Ionicons name="notifications-outline" size={28} color={colors.text} />
-                    {/* <Ionicons name="person-outline" size={28} color={colors.text} /> */}
+                </TouchableOpacity> */}
+
+                <TouchableOpacity onPress={() => navigation.navigate("NotificationsScreen")}>
+                    <View style={{ position: 'relative' }}>
+                        <Ionicons name="notifications-outline" size={28} color={colors.text} />
+                        {unreadCount > 0 && (
+                            <View
+                                style={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    right: 0,
+                                    backgroundColor: 'red',
+                                    borderRadius: 12,
+                                    width: 20,
+                                    height: 20,
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                }}>
+                                <Text style={{ color: 'white', fontSize: 12, fontWeight: 'bold' }}>
+                                    {unreadCount}
+                                </Text>
+                            </View>
+                        )}
+                    </View>
                 </TouchableOpacity>
             </View>
 

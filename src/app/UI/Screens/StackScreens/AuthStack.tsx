@@ -1,5 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import CheckoutScreen from "../CheckoutScreen";
 import DetailsScreen from "../DetailsScreen";
 import EditProfileScreen from "../EditProfileScreen";
@@ -16,20 +17,51 @@ import SuccessScreen from "../SuccessScreen";
 import UnsuccessfulScreen from "../UnsuccessfulScreen";
 import UploadItemScreen from "../UploadItemScreen";
 import BottomTabNavigator from "./BottomTabNavigator";
+import { ActivityIndicator, View } from "react-native";
 
 const AuthStackNavigator = createNativeStackNavigator();
 
 const AuthStack: React.FC = () => {
+  const [initialRoute, setInitialRoute] = useState<string | null>(null);
+
+  useEffect(() => {
+    const checkOnboardingStatus = async () => {
+      try {
+        const hasSeenOnboarding = await AsyncStorage.getItem("hasSeenOnboarding");
+        setInitialRoute(hasSeenOnboarding ? "MainApp" : "Onboarding");
+      } catch (error) {
+        console.error("Error checking onboarding status:", error);
+        setInitialRoute("Onboarding"); // Default to Onboarding if error occurs
+      }
+    };
+
+    checkOnboardingStatus();
+  }, []);
+
+  if (!initialRoute) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#000" />
+      </View>
+    );
+  }
+
   return (
     <AuthStackNavigator.Navigator
-      initialRouteName="Onboarding"
+      initialRouteName={initialRoute}
       screenOptions={{
         headerShown: false,
         animation: "slide_from_right",
       }}
     >
+      {/* Onboarding Screen */}
+      <AuthStackNavigator.Screen
+        name="Onboarding"
+        component={OnboardingScreen}
+        options={{ animation: "fade" }}
+      />
+
       {/* Auth Screens - NO Bottom Tabs */}
-      <AuthStackNavigator.Screen name="Onboarding" component={OnboardingScreen} />
       <AuthStackNavigator.Screen name="Login" component={LoginScreen} />
       <AuthStackNavigator.Screen name="SignUp" component={SignUpScreen} />
       <AuthStackNavigator.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
@@ -45,7 +77,7 @@ const AuthStack: React.FC = () => {
       <AuthStackNavigator.Screen name="NotificationsScreen" component={NotificationsScreen} />
       <AuthStackNavigator.Screen name="UploadItemScreen" component={UploadItemScreen} />
 
-      {/* Welcome + Main App - HAS Bottom Tabs */}
+      {/* Main App with Bottom Tabs */}
       <AuthStackNavigator.Screen name="MainApp" component={BottomTabNavigator} />
     </AuthStackNavigator.Navigator>
   );
