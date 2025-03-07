@@ -10,6 +10,8 @@ import Ionicons from "react-native-vector-icons/Ionicons"; // Icon for the top
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import FontAwesome from "react-native-vector-icons/FontAwesome"; // Facebook icon
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"; // Google icon
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../../../firebaseConfig";
 
 
 type RootStackParamList = {
@@ -28,6 +30,15 @@ const LoginScreen: React.FC<ScreenProps<'ForgotPassword'>> = ({ route, navigatio
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const loginUser = async (email: any, password: any) => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      console.log("User logged in:", userCredential.user);
+    } catch (error: any) {
+      console.error("Login Error:", error.message);
+    }
+  };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>

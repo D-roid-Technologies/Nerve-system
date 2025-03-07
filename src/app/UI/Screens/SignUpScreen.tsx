@@ -16,6 +16,10 @@ import FontAwesome from "react-native-vector-icons/FontAwesome"; // Facebook ico
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"; // Google icon
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { appBackendService } from "../../Redux/Services/service";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../../../firebaseConfig";
+import { addDoc, collection, getDocs } from "firebase/firestore";
+import { db } from "../../../../firebaseConfig";
 
 // Define User Type
 type User = {
@@ -34,6 +38,7 @@ type User = {
 type RootStackParamList = {
     Login: undefined;
     Home: undefined;
+    MainApp: undefined
 };
 
 
@@ -73,12 +78,36 @@ const SignUpScreen: React.FC<ScreenProps<'Login'>> = ({ navigation, route }) => 
         }
     };
 
-    // const signupUser = () => {
-    //     const sendData = {
-    //         ...formData,
-    //     }
-    //     appBackendService.signupUser(sendData)
-    // }
+    const addData = async () => {
+        try {
+            await addDoc(collection(db, "users"), formData);
+            console.log("Document successfully written!");
+        } catch (error) {
+            console.error("Error adding document: ", error);
+        }
+    };
+    const getData = async () => {
+        try {
+            const querySnapshot = await getDocs(collection(db, "users"));
+            querySnapshot.forEach((doc) => {
+                console.log(doc.id, " => ", doc.data());
+            });
+        } catch (error) {
+            console.error("Error getting documents: ", error);
+        }
+    };
+
+    const signUpUser = async (email: any, password: any) => {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password).then((res) => {
+            console.log("User signed up:", res.user);
+            addData().then((res) => {
+                getData()
+            })
+        }).catch((err) => {
+            console.error("Error from sign up user function", err.message);
+        })
+        return userCredential
+    };
 
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -110,8 +139,11 @@ const SignUpScreen: React.FC<ScreenProps<'Login'>> = ({ navigation, route }) => 
                     <Text style={styles.buttonText}>Continue</Text>
                 </TouchableOpacity>
             ) : (
-                <TouchableOpacity style={[styles.button, { backgroundColor: colors.primary }]}
-                    // onPress={signupUser}
+                <TouchableOpacity onPress={() => {
+                    signUpUser(formData.email, formData.password)
+                    navigation.navigate("MainApp")
+                }} style={[styles.button, { backgroundColor: colors.primary }]}
+                // onPress={signupUser}
                 >
                     <Text style={styles.buttonText}>Sign Up</Text>
                 </TouchableOpacity>

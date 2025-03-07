@@ -47,15 +47,12 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation }) => {
         if (length < 6 || length > 15) {
             throw new Error("Length must be between 6 and 15 characters.");
         }
-
         const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         let uniqueString = "";
-
         for (let i = 0; i < length; i++) {
             const randomIndex = Math.floor(Math.random() * characters.length);
             uniqueString += characters[randomIndex];
         }
-
         return uniqueString;
     };
     const pushToCart = () => {
