@@ -1,52 +1,68 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-// Define the structure of a user
-export interface User {
-    id: string;
-    name: string;
+// Define User Type
+export type User = {
+    firstName: string;
+    lastName: string;
     email: string;
-    role: string; // e.g., "admin", "user", etc.
-    isActive: boolean;
-    loading: boolean;
-    error: string | null;
-}
-
-// Initial state
-const initialState: User = {
-    id: "",
-    name: "",
-    email: "",
-    role: "",
-    isActive: false,
-    loading: false,
-    error: null,
+    phone: string;
+    address: string;
+    profilePic?: string;
+    verified?: boolean;
+    middleName?: string;
+    verifiedEmail?: boolean;
+    verifiPhoneNmber?: boolean;
+    isUserLoggedIn?: boolean;
+    agreedToTerms?: boolean;
+    twoFactorSettings?: boolean;
+    uniqueIdentifier?: string;
+    gender?: string;
+    dateOfBirth?: string;
+    loginCount?: number;
+    nameInitials?: string;
+    country?: ""
 };
 
-// Create the slice
+// Initial State
+const initialState: User = {
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    address: "",
+    profilePic: "",
+    verified: false,
+    middleName: "",
+    verifiedEmail: false,
+    verifiPhoneNmber: false,
+    isUserLoggedIn: false,
+    agreedToTerms: false,
+    twoFactorSettings: false,
+    uniqueIdentifier: "",
+    gender: "",
+    dateOfBirth: "",
+    loginCount: 0,
+    nameInitials: "",
+    country: ""
+};
+
+// Create User Slice
 export const userSlice = createSlice({
     name: "user",
     initialState,
     reducers: {
         // Action to start a user-related operation
         startLoading(state) {
-            state.loading = true;
-            state.error = null;
+            // Example: If you want to track loading state later, add state.loading = true;
         },
 
         // Action to handle user fetch success
         fetchUserSuccess(state, action: PayloadAction<User>) {
-            state.id = action.payload.id;
-            state.name = action.payload.name;
-            state.email = action.payload.email;
-            state.role = action.payload.role;
-            state.isActive = action.payload.isActive;
-            state.loading = false;
-        },
-
-        // Action to handle errors during user operations
-        fetchUserFailure(state, action: PayloadAction<string>) {
-            state.loading = false;
-            state.error = action.payload;
+            state.firstName = action.payload.firstName;
+            state.lastName = action.payload.lastName;
+            state.loginCount = action.payload.loginCount;
+            state.country = action.payload.country;
+            console.log("from user slice", state.country, state.firstName);
         },
 
         // Action to update user details
@@ -55,21 +71,14 @@ export const userSlice = createSlice({
         },
 
         // Action to reset the user state
-        resetUser(state) {
-            state.id = "";
-            state.name = "";
-            state.email = "";
-            state.role = "";
-            state.isActive = false;
-            state.loading = false;
-            state.error = null;
+        resetUser() {
+            return initialState; // Resets state to initial values
         },
     },
 });
 
-// Export actions for use in components or thunks
-export const { startLoading, fetchUserSuccess, fetchUserFailure, updateUser, resetUser } =
-    userSlice.actions;
+// Export Actions
+export const { startLoading, fetchUserSuccess, updateUser, resetUser } = userSlice.actions;
 
-// Export the reducer to be included in the store
-// export default userSlice.reducer;
+// Export Reducer
+export default userSlice.reducer;

@@ -43,7 +43,7 @@ const ProfileScreen: React.FC<ScreenProps<'EditProfileScreen'>> = ({ route, navi
     const dispatch = useDispatch();
     const toast = useToast();
 
-    const user = useSelector((state: RootState) => state.auth.user);
+    const user = useSelector((state: RootState) => state.user);
     const orders = useSelector((state: RootState) => state.order);
 
     const handleSignOut = () => {
@@ -94,7 +94,7 @@ const ProfileScreen: React.FC<ScreenProps<'EditProfileScreen'>> = ({ route, navi
                         />
                         <View>
                             <Text style={[styles.profileName, { color: colors.text }]}>
-                                {user?.firstName && user?.lastName
+                                {user?.firstName || user?.lastName
                                     ? `${user.firstName} ${user.lastName}`
                                     : "Please log in"}
                             </Text>
