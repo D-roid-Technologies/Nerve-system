@@ -19,6 +19,7 @@ import { logout } from "../../Redux/slices/authSlice";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useToast } from "react-native-toast-notifications";
+import { logoutUser } from "../../Config/functions";
 
 type RootStackParamList = {
     ProfileScreen: undefined;
@@ -30,6 +31,7 @@ type RootStackParamList = {
     Login: undefined;
     Home: undefined;
     UploadItemScreen: undefined;
+    ProfileMainScreen: undefined;
 };
 
 type ScreenProps<T extends keyof RootStackParamList> = {
@@ -52,7 +54,7 @@ const ProfileScreen: React.FC<ScreenProps<'EditProfileScreen'>> = ({ route, navi
             {
                 text: "Yes, Sign Out",
                 onPress: () => {
-                    dispatch(logout());
+                    logoutUser()
                     toast.show("You have logged out successfully", { type: "success" });
                     navigation.navigate("Home");
                 },
@@ -80,14 +82,14 @@ const ProfileScreen: React.FC<ScreenProps<'EditProfileScreen'>> = ({ route, navi
                             if (!user || !user.profilePic) {
                                 navigation.navigate("Login");
                             } else {
-                                navigation.navigate("EditProfileScreen");
+                                navigation.navigate("ProfileMainScreen");
                             }
                         }}
                     >
                         <Image
                             source={
                                 user?.profilePic
-                                    ? { uri: user.profilePic }
+                                    ? { uri: user?.profilePic }
                                     : require("../../Assets/png/profile-icon.png")
                             }
                             style={styles.profileImage}
@@ -146,7 +148,7 @@ const ProfileScreen: React.FC<ScreenProps<'EditProfileScreen'>> = ({ route, navi
 
                 {/* User Information Section */}
                 <View style={styles.userDetails}>
-                    <Text style={[styles.sectionTitle, { color: colors.text }]}>User Information</Text>
+                    <Text style={[styles.sectionTitle, { color: colors.text }]}>Your Information</Text>
                     <Text style={styles.detailText}>Email: {user?.email}</Text>
                     <Text style={styles.detailText}>Phone: {user?.phone}</Text>
                     <Text style={styles.detailText}>Address: {user?.address}</Text>

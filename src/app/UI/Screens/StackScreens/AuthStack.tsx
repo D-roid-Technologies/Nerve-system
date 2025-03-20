@@ -18,6 +18,7 @@ import UnsuccessfulScreen from "../UnsuccessfulScreen";
 import UploadItemScreen from "../UploadItemScreen";
 import BottomTabNavigator from "./BottomTabNavigator";
 import { ActivityIndicator, View } from "react-native";
+import ProfileMainScreen from "../ProfileMainScreen";
 
 const AuthStackNavigator = createNativeStackNavigator();
 
@@ -76,6 +77,7 @@ const AuthStack: React.FC = () => {
       <AuthStackNavigator.Screen name="EditProfileScreen" component={EditProfileScreen} />
       <AuthStackNavigator.Screen name="NotificationsScreen" component={NotificationsScreen} />
       <AuthStackNavigator.Screen name="UploadItemScreen" component={UploadItemScreen} />
+      <AuthStackNavigator.Screen name="ProfileMainScreen" component={ProfileMainScreen} />
 
       {/* Main App with Bottom Tabs */}
       <AuthStackNavigator.Screen name="MainApp" component={BottomTabNavigator} />

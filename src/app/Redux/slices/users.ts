@@ -15,7 +15,7 @@ export type User = {
     isUserLoggedIn?: boolean;
     agreedToTerms?: boolean;
     twoFactorSettings?: boolean;
-    uniqueIdentifier?: string;
+    uniqueIdentifier?: string | null;
     gender?: string;
     dateOfBirth?: string;
     loginCount?: number;
@@ -38,7 +38,7 @@ const initialState: User = {
     isUserLoggedIn: false,
     agreedToTerms: false,
     twoFactorSettings: false,
-    uniqueIdentifier: "",
+    uniqueIdentifier: null,
     gender: "",
     dateOfBirth: "",
     loginCount: 0,
@@ -62,7 +62,18 @@ export const userSlice = createSlice({
             state.lastName = action.payload.lastName;
             state.loginCount = action.payload.loginCount;
             state.country = action.payload.country;
-            console.log("from user slice", state.country, state.firstName);
+
+            state.email = action.payload.email;
+            state.phone = action.payload.phone;
+            state.address = action.payload.address;
+            state.verified = action.payload.verified;
+            state.profilePic = action.payload.profilePic
+            console.log("from user slice", state.profilePic, state.firstName);
+        },
+
+        storeUniqueIdentifier(state, action: PayloadAction<{ uniqueIdentifier: string }>) {
+            state.uniqueIdentifier = action.payload.uniqueIdentifier;
+            console.log("from user slice", state.uniqueIdentifier);
         },
 
         // Action to update user details
@@ -78,7 +89,7 @@ export const userSlice = createSlice({
 });
 
 // Export Actions
-export const { startLoading, fetchUserSuccess, updateUser, resetUser } = userSlice.actions;
+export const { startLoading, fetchUserSuccess, updateUser, resetUser, storeUniqueIdentifier } = userSlice.actions;
 
 // Export Reducer
 export default userSlice.reducer;

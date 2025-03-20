@@ -12,11 +12,15 @@ import FontAwesome from "react-native-vector-icons/FontAwesome"; // Facebook ico
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"; // Google icon
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../../../firebaseConfig";
+import { loginUser } from "../../Config/functions";
+import { async } from "@firebase/util";
+import { useToast } from "react-native-toast-notifications";
 
 
 type RootStackParamList = {
   ForgotPassword: undefined;
   SignUp: undefined;
+  MainApp: undefined;
 };
 
 type ScreenProps<T extends keyof RootStackParamList> = {
@@ -27,18 +31,22 @@ type ScreenProps<T extends keyof RootStackParamList> = {
 const LoginScreen: React.FC<ScreenProps<'ForgotPassword'>> = ({ route, navigation }) => {
   const theme = useColorScheme();
   const colors = theme === "dark" ? Colors.dark : Colors.light;
+  const toast = useToast();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const loginUser = async (email: any, password: any) => {
+  const handleUserLogin = async () => {
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      console.log("User logged in:", userCredential.user);
-    } catch (error: any) {
-      console.error("Login Error:", error.message);
+      await loginUser(email, password).then(() => {
+        toast.show("Login successfully", { type: "success" });
+        navigation.navigate("MainApp");
+      })
+    } catch (err) {
+      toast.show(`Login is unsuccessfully - ${err}`, { type: "danger" });
+      console.log(err)
     }
-  };
+  }
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -98,7 +106,8 @@ const LoginScreen: React.FC<ScreenProps<'ForgotPassword'>> = ({ route, navigatio
       </View>
 
       {/* Login Button */}
-      <TouchableOpacity style={[styles.button, { backgroundColor: colors.primary }]}>
+      <TouchableOpacity style={[styles.button, { backgroundColor: colors.primary }]}
+        onPress={handleUserLogin}>
         <Text style={styles.buttonText}>Log In</Text>
       </TouchableOpacity>
 

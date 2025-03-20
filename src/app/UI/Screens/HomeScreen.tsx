@@ -5,7 +5,6 @@ import {
     useColorScheme,
     TouchableOpacity,
     View,
-    TextInput,
     ScrollView,
     FlatList,
     Image,
@@ -21,10 +20,10 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
 
 // Define category type
-type CategoryType = "Explore" | "Mens" | "Womens" | "Gadgets" | "Automotive";
+type CategoryType = "All" | "Men" | "Women" | "Gadgets" | "Automotive";
 
 // Define categories
-const categories: CategoryType[] = ["Explore", "Mens", "Womens", "Gadgets", "Automotive"];
+const categories: CategoryType[] = ["All", "Men", "Women", "Gadgets", "Automotive"];
 
 // Define item structure
 interface Item {
@@ -57,7 +56,7 @@ interface Item {
 
 // Define sample items as an array of objects
 const sampleItems: Record<CategoryType, Item[]> = {
-    Explore: [
+    All: [
         {
             id: 1,
             name: "Elegant Wooden Chair",
@@ -229,7 +228,7 @@ const sampleItems: Record<CategoryType, Item[]> = {
             tags: ["king-size bed", "luxury furniture", "bedroom", "modern design"],
         },
     ],
-    Mens: [
+    Men: [
         {
             id: 1,
             name: "Shirt",
@@ -339,7 +338,7 @@ const sampleItems: Record<CategoryType, Item[]> = {
             tags: ["Luxury", "Formal", "Elegant"],
         },
     ],
-    Womens: [
+    Women: [
         {
             id: 1,
             name: "Dress",
@@ -647,7 +646,7 @@ const sampleItems: Record<CategoryType, Item[]> = {
 const HomeScreen: React.FC<any> = ({ navigation }) => {
     const theme = useColorScheme();
     const colors = theme === "dark" ? Colors.dark : Colors.light;
-    const [selectedCategory, setSelectedCategory] = useState<CategoryType>("Explore");
+    const [selectedCategory, setSelectedCategory] = useState<CategoryType>("All");
     const toast = useToast()
     const notifications = useSelector((state: RootState) => state.notifications.notifications);
     const unreadCount = notifications.filter(notification => !notification.read).length;
@@ -725,9 +724,9 @@ const HomeScreen: React.FC<any> = ({ navigation }) => {
             </View>
 
             {/* Household Items Scroll (Only shows when 'Explore' is selected) */}
-            {selectedCategory === "Explore" && (
+            {selectedCategory === "All" && (
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.householdScroll}>
-                    {sampleItems.Explore.map((item, index) => (
+                    {sampleItems.All.map((item, index) => (
                         <TouchableOpacity key={item.id} style={styles.householdItem} onPress={() => navigation.navigate('DetailsScreen', { item, index })}>
                             <View style={styles.householdItemView}>
                                 <Image source={item.image} style={styles.image} />
