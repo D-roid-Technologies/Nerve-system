@@ -351,5 +351,129 @@ const signUpUser = async (formData: SignpUser, country: string) => {
     }
 };
 
+// const signUpUser = async (formData: SignpUser, country: string) => {
+//     if (!formData.email || !formData.password) {
+//         console.error("Email and password are required");
+//         return;
+//     }
+
+//     try {
+//         // Sign up with email and password using Supabase
+//         const { data, error } = await supabase.auth.signUp({
+//             email: formData.email,
+//             password: formData.password,
+//         });
+
+//         if (error) {
+//             console.error("Error signing up:", error.message);
+//             return;
+//         }
+
+//         // const USERID = data.user?.id; // Accessing the user ID from the data property
+//         const USERID: any = data.user?.id
+//         await AsyncStorage.setItem("USERID", USERID);
+//         store.dispatch(storeUniqueIdentifier({ uniqueIdentifier: USERID }));
+
+//         let loginCountNum = 0;
+
+//         // Helper function to capitalize the first letter
+//         const capitalizeFirstLetter = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
+
+//         // Helper function for login count increment
+//         const handleLoginCount = (num: number) => num + 1;
+
+//         // Function to get the current date and time
+//         const getCurrentDateTime = () => {
+//             const now = new Date();
+//             const year = now.getFullYear();
+//             const month = now.getMonth() + 1;
+//             const date = now.getDate();
+//             const hours = now.getHours();
+//             const minutes = now.getMinutes();
+//             const seconds = now.getSeconds();
+
+//             const formattedDate = `${year}-${String(month).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
+//             const formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+//             return {
+//                 year,
+//                 month,
+//                 date,
+//                 time: formattedTime,
+//                 formattedDateTime: `${formattedDate} ${formattedTime}`,
+//             };
+//         };
+
+//         const currentDateTime = getCurrentDateTime();
+
+//         // Inserting user data into Supabase table
+//         const { error: insertError } = await supaBase
+//             .from('users') // Replace 'users' with your table name
+//             .insert([
+//                 {
+//                     first_name: capitalizeFirstLetter(formData.firstName),
+//                     last_name: capitalizeFirstLetter(formData.lastName),
+//                     email: formData.email,
+//                     address: formData.address,
+//                     profile_pic: formData.profilePic,
+//                     verified_email: false,
+//                     verified_phone_number: false,
+//                     is_user_logged_in: false,
+//                     phone: formData.phone,
+//                     agreed_to_terms: false,
+//                     two_factor_settings: false,
+//                     unique_identifier: USERID,
+//                     gender: "", // Replace with formData.gender if available
+//                     date_of_birth: "", // Replace with formData.dateOfBirth if available
+//                     login_count: handleLoginCount(loginCountNum),
+//                     name_initials: `${formData.firstName[0].toUpperCase()}${formData.lastName[0].toUpperCase()}`,
+//                     country: country,
+//                     current_date_time: currentDateTime.formattedDateTime,
+//                 },
+//             ]);
+
+//         if (insertError) {
+//             console.error("Error inserting user data:", insertError.message);
+//             return;
+//         }
+
+//         console.log("User data successfully inserted!");
+
+//         // Fetching the user from the database
+//         const { data: userData, error: fetchError } = await supaBase
+//             .from('users')
+//             .select('*')
+//             .eq('unique_identifier', USERID)
+//             .single();
+
+//         if (fetchError) {
+//             console.log("Error fetching user data:", fetchError.message);
+//             return;
+//         }
+
+//         if (userData) {
+//             store.dispatch(
+//                 fetchUserSuccess({
+//                     firstName: userData.first_name,
+//                     lastName: userData.last_name,
+//                     loginCount: userData.login_count,
+//                     country: userData.country,
+//                     email: userData.email,
+//                     phone: userData.phone,
+//                     address: userData.address,
+//                     verified: userData.verified_email,
+//                     profilePic: userData.profile_pic,
+//                 })
+//             );
+//         } else {
+//             console.log("No user found with the provided USERID");
+//         }
+
+//         return data.user; // Return the user from the response
+//     } catch (err: any) {
+//         console.error("Error setting up your account:", err.message);
+//     }
+// };
+
 
 export { signUpUser, logoutUser, loginUser }

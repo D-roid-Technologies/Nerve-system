@@ -1,15 +1,15 @@
-import React, { useReducer } from 'react';
+import React from 'react';
 import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet, useColorScheme, ImageBackground, ScrollView } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { RouteProp, useNavigation } from '@react-navigation/native';
+import { RouteProp } from '@react-navigation/native';
 import Colors from '../../Utils/Theme';
 import { useToast } from 'react-native-toast-notifications';
-import { allItems } from '../../Utils/Data';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addOrUpdateCartItem } from '../../Redux/slices/cartSlice';
-import { RootState, store } from '../../Redux/store';
+import { RootState } from '../../Redux/store';
+import { selectAllItems } from '../../Redux/slices/itemSlice';
 
 type RootStackParamList = {
     DetailsScreen: { item: any; index: number };
@@ -20,28 +20,26 @@ type DetailsScreenProps = {
     navigation: NativeStackNavigationProp<RootStackParamList, 'DetailsScreen'>;
 };
 
-
-const findSimilarItems = (currentItem: any, allItems: any): any => {
-    return allItems.filter((item: any) => item.category === currentItem.category && item.name !== currentItem.name);
-};
-
-const selectedItem = allItems[0];
-const similarItems = findSimilarItems(selectedItem, allItems);
-
-const mockReviews = [
-    { id: 1, reviewer: 'John Doe', comment: 'Amazing product!', rating: 5 },
-    { id: 2, reviewer: 'Jane Smith', comment: 'Good quality.', rating: 4 },
-];
-
 const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation }) => {
     const toast = useToast();
     const theme = useColorScheme();
     const dispatch = useDispatch();
     const colors = theme === 'dark' ? Colors.dark : Colors.light;
-    const { item, index } = route?.params as { item: any; index: number };
+    const { item, index } = route.params;
 
-    // console.log({ id: index, ...item })
+    // ✅ Moved inside component to avoid "undefined" error
+    const allItems = useSelector(selectAllItems);
 
+    const findSimilarItems = (currentItem: any, allItems: any): any => {
+        return allItems.filter((item: any) => item.category === currentItem.category && item.name !== currentItem.name);
+    };
+
+    const similarItems = findSimilarItems(item, allItems);
+
+    const mockReviews = [
+        { id: 1, reviewer: 'John Doe', comment: 'Amazing product!', rating: 5 },
+        { id: 2, reviewer: 'Jane Smith', comment: 'Good quality.', rating: 4 },
+    ];
 
     const generateUniqueString = (length: number = 10): string => {
         if (length < 6 || length > 15) {
@@ -55,15 +53,14 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation }) => {
         }
         return uniqueString;
     };
+
     const pushToCart = () => {
-        // console.log('Item Image Type:', typeof item.image, 'Value:', item.image);
         dispatch(addOrUpdateCartItem({ ...item, quantity: 1, id: generateUniqueString(7), image: typeof item.image === 'number' ? item.image : { uri: item.image } }));
         toast.show(`${item.name} added to cart`, { type: 'success' });
     };
 
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-
             {/* Background Image */}
             <ImageBackground source={typeof item.image === 'number' ? item.image : { uri: item.image || '' }} style={styles.imageBackground} resizeMode="cover">
                 {/* Header Section */}
@@ -95,16 +92,15 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation }) => {
                         renderItem={({ item, index }) => (
                             <TouchableOpacity
                                 style={styles.similarItem}
-                                onPress={() => navigation.navigate('DetailsScreen', { item, index })} // Navigate with new item
+                                onPress={() => navigation.navigate('DetailsScreen', { item, index })}
                             >
-                                <Image source={item.image} style={styles.similarItemImage} />
+                                <Image source={typeof item.image === 'number' ? item.image : { uri: item.image }} style={styles.similarItemImage} />
                                 <Text style={[styles.similarItemText, { color: colors.text }]}>{item.name}</Text>
                                 <Text style={[styles.similarItemPrice, { color: colors.primary }]}>£ {item.price}</Text>
                             </TouchableOpacity>
                         )}
                         showsHorizontalScrollIndicator={false}
                     />
-
                 </View>
 
                 {/* Reviews Section */}
@@ -131,8 +127,6 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ route, navigation }) => {
         </SafeAreaView>
     );
 };
-
-export default DetailsScreen;
 
 const styles = StyleSheet.create({
     container: { flex: 1 },
@@ -254,3 +248,5 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
 });
+
+export default DetailsScreen;

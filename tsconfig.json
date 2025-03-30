@@ -1,6 +1,10 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "strict": true
+    "strict": true,
+    "baseUrl": "./", // This sets the base folder to the root folder
+    "paths": {
+      "@supabaseClient": ["supabaseClient.js"]
+    }
   }
 }

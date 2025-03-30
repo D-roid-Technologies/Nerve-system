@@ -1,36 +1,48 @@
-import { FlatList, Image, ImageSourcePropType, ListRenderItem, Pressable, StyleSheet, Text, TextInput, useColorScheme, View } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
+import {
+    FlatList,
+    Image,
+    ListRenderItem,
+    Pressable,
+    StyleSheet,
+    Text,
+    TextInput,
+    useColorScheme,
+    View
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '../../Utils/Theme';
-import { useToast } from 'react-native-toast-notifications';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { allItems } from '../../Utils/Data'; // Ensure 'allItems' is defined in this path
-import { Item } from 'react-native-paper/lib/typescript/components/List/List';
+import { useSelector } from 'react-redux';
+import { selectAllItems } from '../../Redux/slices/itemSlice';
 
 const SearchScreen: React.FunctionComponent<any> = ({ navigation }) => {
     const theme = useColorScheme();
     const colors = theme === "dark" ? Colors.dark : Colors.light;
-    const toast = useToast();
-    const [search, setSearch] = React.useState<any>("");
+
+    // Get all items from Redux store
+    const allItems = useSelector(selectAllItems);
+
+    // Search query state
+    const [search, setSearch] = useState<string>("");
 
     // Filter items based on search query
-    const searchItem = () => {
-        if (!search.trim()) return allItems; // If search is empty, return all items
-
-        return allItems.filter((item) =>
-            item.name.toLowerCase().includes(search.toLowerCase()) ||
-            item.category.toLowerCase().includes(search.toLowerCase())
-        );
-    };
+    const filteredItems = allItems.filter(item =>
+        item.name.toLowerCase().includes(search.toLowerCase()) ||
+        item.category.toLowerCase().includes(search.toLowerCase())
+    );
 
     // Render each item in the list
     const renderItem: ListRenderItem<any> = ({ item, index }) => {
         return (
-            <Pressable style={styles.itemContainer} onPress={() => navigation.navigate('DetailsScreen', { item, index })
-
-                // toast.show("Leads to details screen")
-            }>
-                <Image source={item.image} style={styles.itemImage} />
+            <Pressable
+                style={styles.itemContainer}
+                onPress={() => navigation.navigate('DetailsScreen', { item, index })}
+            >
+                <Image
+                    source={typeof item.image === 'number' ? item.image : { uri: String(item.image) }}
+                    style={styles.itemImage}
+                />
                 <Text style={styles.itemName}>{item.name}</Text>
                 <Text style={styles.itemCategory}>{item.category}</Text>
                 <Text style={styles.itemPrice}>£{item.price.toFixed(2)}</Text>
@@ -40,22 +52,26 @@ const SearchScreen: React.FunctionComponent<any> = ({ navigation }) => {
 
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+            {/* Search Bar */}
             <View style={[styles.searchBar, { backgroundColor: colors.background }]}>
                 <Ionicons name="search-outline" size={24} color="gray" />
                 <TextInput
                     style={styles.searchInput}
                     placeholder="Find any item"
                     placeholderTextColor="gray"
-                    onChangeText={(text) => setSearch(text)} // Corrected event handler
+                    value={search}
+                    onChangeText={(text) => setSearch(text)}
                 />
             </View>
 
+            {/* Items List */}
             <FlatList
-                data={searchItem()} // Get the filtered items based on search query
-                keyExtractor={(item, index) => index.toString()} // Use a unique key for each item
-                renderItem={renderItem} // Render items using the `renderItem` function
-                numColumns={2} // Display two items per row
-                columnWrapperStyle={styles.row} // Apply styles to each row for spacing
+                data={filteredItems} // Display filtered items
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={renderItem}
+                numColumns={2}
+                columnWrapperStyle={styles.row}
+                ListEmptyComponent={<Text style={styles.emptyText}>No items found</Text>} // Show if no results
             />
         </SafeAreaView>
     );
@@ -88,7 +104,6 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         backgroundColor: Colors.light.card, // Assuming this exists in your theme
         padding: 10,
-        // alignItems: 'center',
     },
     itemImage: {
         width: '100%',
@@ -98,19 +113,25 @@ const styles = StyleSheet.create({
     },
     itemName: {
         fontSize: 16,
-        fontWeight: 900,
+        fontWeight: '900',
         color: Colors.light.text,
         marginVertical: 5,
     },
     itemCategory: {
         fontSize: 14,
         color: Colors.light.secondary,
-        fontWeight: 300
+        fontWeight: '300'
     },
     itemPrice: {
         fontSize: 16,
-        fontWeight: 600,
+        fontWeight: '600',
         color: Colors.light.primary,
         marginTop: 5,
     },
+    emptyText: {
+        textAlign: 'center',
+        fontSize: 16,
+        color: 'gray',
+        marginTop: 20,
+    }
 });

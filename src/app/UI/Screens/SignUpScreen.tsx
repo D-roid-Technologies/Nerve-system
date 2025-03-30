@@ -61,6 +61,7 @@ const SignUpScreen: React.FC<ScreenProps<"Login">> = ({ navigation }) => {
     const [country, setCountry] = useState("");
     const [step, setStep] = useState(0);
     const toast = useToast();
+    const [signupText, setSignupText] = useState<string>("Sign Up");
 
     const [formData, setFormData] = useState<SignpUser>({
         firstName: "",
@@ -160,11 +161,12 @@ const SignUpScreen: React.FC<ScreenProps<"Login">> = ({ navigation }) => {
             return;
         }
         try {
+            setSignupText("Setting up your account ...")
             await signUpUser(formData, country).then(() => {
                 toast.show("We have signed you up successfully", { type: "success" });
                 navigation.navigate("MainApp");
             }).catch((err: any) => {
-                toast.show(`${err.message}` || `Signing you up FAILED, check all details and try again`, { type: "danger" });
+                toast.show(`${err.message}` || `An error ovccured Signing up, check all details and try again`, { type: "danger" });
             })
 
         } catch (error: any) {
@@ -225,7 +227,7 @@ const SignUpScreen: React.FC<ScreenProps<"Login">> = ({ navigation }) => {
                     ))}
 
                     <TouchableOpacity style={[styles.button, { backgroundColor: colors.primary }]} onPress={handleSignUp}>
-                        <Text style={styles.buttonText}>Sign Up</Text>
+                        <Text style={styles.buttonText}>{signupText}</Text>
                     </TouchableOpacity>
                 </>
             )}
