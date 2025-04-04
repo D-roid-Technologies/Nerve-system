@@ -190,7 +190,7 @@ const UploadItemScreen: React.FC<any> = ({ navigation }) => {
     const handleItemUpload = async () => {
         try {
             setUploadText("Uploading your Item ...");
-    
+
             // Ensure that 'createItem' has all the required data before uploading
             const itemData = {
                 name: createItem.name,
@@ -215,23 +215,23 @@ const UploadItemScreen: React.FC<any> = ({ navigation }) => {
                 image: createItem.image, // Ensure image is set correctly
                 timestamp: new Date(), // Add timestamp for when the item was created
             };
-    
+
             // Retrieve the USERID from AsyncStorage
             const USERID = await AsyncStorage.getItem("USERID");
-    
+
             if (!USERID) {
                 setUploadText("Upload your Item");
                 console.error("User is not logged in. Cannot upload item.");
                 return;
             }
-    
+
             // Get the reference to the user document
             const userDocRef = doc(db, "users", USERID);
             console.log(userDocRef)
-    
+
             // Fetch the document from Firestore
             const userDocSnapshot = await getDoc(userDocRef);
-    
+
             // Check if the document exists
             if (!userDocSnapshot.exists()) {
                 setUploadText("Upload your Item");
@@ -239,24 +239,24 @@ const UploadItemScreen: React.FC<any> = ({ navigation }) => {
                 console.log(userDocSnapshot)
                 return;
             }
-    
+
             // Retrieve the current items array from the user document
             const matchedUser = userDocSnapshot.data();
-    
+
             if (matchedUser && matchedUser.items && matchedUser.items.allItems) {
                 // Add the new item to the existing array
                 await updateDoc(userDocRef, {
                     "items.allItems": arrayUnion(itemData) // Use arrayUnion to add the item without duplication
                 });
-    
+
                 setUploadText("Item uploaded successfully!");
                 console.log("Item successfully added to the user's items list");
-    
+
             } else {
                 setUploadText("Upload your Item");
                 console.error("User's items array is missing or empty.");
             }
-    
+
         } catch (err) {
             setUploadText("Upload your Item");
             console.error("Error uploading item: ", err);

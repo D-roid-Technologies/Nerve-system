@@ -351,6 +351,64 @@ const signUpUser = async (formData: SignpUser, country: string) => {
     }
 };
 
+const updateUserPrimaryInfo = async (formData: any) => {
+    const capitalizeFirstLetter = (str: string) => {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    };
+    try {
+        const USERID = await AsyncStorage.getItem("USERID");
+        if (!USERID) {
+            console.error("No USERID found. User might not be logged in.");
+            return;
+        }
+
+        const querySnapshot = await getDocs(collection(db, "users"));
+        let userDocId: string | null = null;
+
+        // Find the correct document by USERID
+        querySnapshot.forEach((docSnap) => {
+            const data = docSnap.data();
+            if (data.primaryInformation?.uniqueIdentifier === USERID) {
+                userDocId = docSnap.id;
+            }
+        });
+
+        if (!userDocId) {
+            console.error("No user document found for the provided USERID");
+            return;
+        }
+
+        const userDocRef = doc(db, "users", userDocId);
+
+        // Update the primaryInformation
+        await updateDoc(userDocRef, {
+            primaryInformation: {
+                firstName: capitalizeFirstLetter(formData.firstName),
+                middleName: capitalizeFirstLetter(formData.middleName || ""),
+                lastName: capitalizeFirstLetter(formData.lastName),
+                email: formData.email,
+                address: formData.address,
+                profilePic: formData.profilePic || "",
+                verifiedEmail: false,
+                verifiPhoneNmber: false,
+                isUserLoggedIn: false,
+                phone: formData.phone,
+                agreedToTerms: false,
+                twoFactorSettings: false,
+                uniqueIdentifier: USERID,
+                gender: formData.gender || "",
+                dateOfBirth: formData.dateOfBirth || "",
+                loginCount: 1, // Or keep previous count logic if needed
+                nameInitials: `${formData.firstName[0].toUpperCase()}${formData.lastName[0].toUpperCase()}`
+            }
+        });
+
+        console.log("User primary information successfully updated.");
+    } catch (err) {
+        console.error("Error updating user information:", err);
+    }
+};
+
 // const signUpUser = async (formData: SignpUser, country: string) => {
 //     if (!formData.email || !formData.password) {
 //         console.error("Email and password are required");
@@ -476,4 +534,4 @@ const signUpUser = async (formData: SignpUser, country: string) => {
 // };
 
 
-export { signUpUser, logoutUser, loginUser }
+export { signUpUser, logoutUser, loginUser, updateUserPrimaryInfo }
