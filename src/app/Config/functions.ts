@@ -178,11 +178,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 // };
 
 const loginUser = async (email: string, password: string) => {
-    try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const userId = await AsyncStorage.getItem("USERID");
-        console.log("User logged in:", userId);
+    const userCredential = await signInWithEmailAndPassword(auth, email, password).then(async (res) => {
         const querySnapshot = await getDocs(collection(db, "users"));
+        // console.log(res.user.uid, querySnapshot.docs)
+        const userId = res.user.uid;
         const matchedUser = querySnapshot.docs
             .map(doc => doc.data())
             .find(user => user.primaryInformation.uniqueIdentifier === userId);
@@ -193,18 +192,20 @@ const loginUser = async (email: string, password: string) => {
         store.dispatch(fetchUserSuccess({
             firstName: matchedUser.primaryInformation.firstName,
             lastName: matchedUser.primaryInformation.lastName,
+            middleName: matchedUser.primaryInformation.middleName,
             loginCount: matchedUser.primaryInformation.loginCount,
             country: matchedUser.location?.countrySelected,
             email: matchedUser.primaryInformation.email,
             phone: matchedUser.primaryInformation.phone,
             address: matchedUser.primaryInformation.address,
             verified: matchedUser.primaryInformation.verified,
-            profilePic: matchedUser.primaryInformation.profilePic
+            profilePic: matchedUser.primaryInformation.profilePic,
+            gender: matchedUser.primaryInformation.gender,
+            dateOfBirth: matchedUser.primaryInformation.dateOfBirth,
         }));
 
         console.log("✅ User data stored successfully!");
-        return userCredential;
-    } catch (error: any) {
+    }).catch((error) => {
         console.error("Login Error:", error.message);
 
         // Handle Firebase authentication errors
@@ -217,7 +218,8 @@ const loginUser = async (email: string, password: string) => {
         } else {
             return { error: "An unexpected error occurred. Please try again later." };
         }
-    }
+    });
+    return userCredential;
 };
 
 const logoutUser = async () => {

@@ -62,13 +62,15 @@ export const userSlice = createSlice({
             state.lastName = action.payload.lastName;
             state.loginCount = action.payload.loginCount;
             state.country = action.payload.country;
-
+            state.middleName = action.payload.middleName;
+            state.gender = action.payload.gender;
+            state.dateOfBirth = action.payload.dateOfBirth;
             state.email = action.payload.email;
             state.phone = action.payload.phone;
             state.address = action.payload.address;
             state.verified = action.payload.verified;
             state.profilePic = action.payload.profilePic
-            console.log("from user slice", state.profilePic, state.firstName);
+            // console.log("from user slice", state.profilePic, state.firstName);
         },
 
         storeUniqueIdentifier(state, action: PayloadAction<{ uniqueIdentifier: string }>) {
